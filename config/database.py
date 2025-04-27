@@ -1,7 +1,7 @@
 import typing
 
 from sqlalchemy.engine import URL
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 
 database_url = URL.create(
@@ -16,7 +16,7 @@ engine = create_async_engine(database_url.render_as_string())
 session_factory = async_sessionmaker(engine)
 
 
-async def session() -> typing.AsyncGenerator:
+async def session_generator() -> typing.AsyncGenerator[AsyncSession]:
     """Generate connect session for making queries."""
     async with session_factory() as session:
         yield session
