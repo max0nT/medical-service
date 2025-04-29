@@ -8,4 +8,4 @@ class RecordRepository(
 ):
     """Repository class for `Record` model."""
 
-    model = models.Record
+    model: type[models.Record] = models.Record

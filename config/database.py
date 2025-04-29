@@ -16,7 +16,7 @@ engine = create_async_engine(database_url.render_as_string())
 session_factory = async_sessionmaker(engine)
 
 
-async def session_generator() -> typing.AsyncGenerator[AsyncSession]:
+async def session_generator() -> typing.AsyncGenerator[AsyncSession, None]:
     """Generate connect session for making queries."""
     async with session_factory() as session:
         yield session

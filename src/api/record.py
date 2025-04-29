@@ -1,0 +1,97 @@
+import http
+import typing
+
+import fastapi
+
+from src import dependencies, entities, models, repositories
+from src.models.record import Record
+from src.permissions import user_is_employee
+
+router = fastapi.APIRouter(prefix="records/", tags=["Records"])
+
+
+@router.get("/")
+async def get_list(
+    user: typing.Annotated[
+        models.User,
+        fastapi.Depends(dependencies.auth_user),
+    ],
+) -> list[entities.RecordReadSchema]:
+    """Retrun list of `Record` instances."""
+    repository = await repositories.RecordRepository.create_repository()
+    result_list = await repository.get_list()
+    return [entities.RecordReadSchema.model_validate(record) for record in result_list]
+
+
+@router.get("{pk}/")
+async def retrieve(
+    user: typing.Annotated[
+        models.User,
+        fastapi.Depends(dependencies.auth_user),
+    ],
+    pk: int,
+) -> entities.RecordReadSchema:
+    """Retrun one `Record` instance by id."""
+    repository = await repositories.RecordRepository.create_repository()
+    instance = await repository.retrieve_one(pk=pk)
+    if not instance:
+        raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
+
+    return entities.RecordReadSchema.model_validate(instance)
+
+
+@router.post("/")
+async def create(
+    user: typing.Annotated[
+        models.User,
+        fastapi.Depends(dependencies.auth_user),
+    ],
+    data: entities.RecordWriteSchema,
+) -> entities.RecordReadSchema:
+    """Create `Record` instance."""
+    user_is_employee(user=user)
+    repository = await repositories.RecordRepository.create_repository()
+    instance: Record = await repository.create_one(
+        crerated_by_id=user.id,
+        **data.model_dump(mode="json"),
+    )
+    return entities.RecordReadSchema.model_validate(instance)
+
+
+@router.put("{pk}/")
+async def update(
+    user: typing.Annotated[
+        models.User,
+        fastapi.Depends(dependencies.auth_user),
+    ],
+    pk: int,
+    data: entities.RecordWriteSchema,
+) -> entities.RecordReadSchema:
+    """Update `Record` instance."""
+    user_is_employee(user=user)
+
+    repository = await repositories.RecordRepository.create_repository()
+    instance = await repository.retrieve_one(pk=pk)
+    if not instance:
+        raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
+
+    await repository.reconnect()
+    updated_instance = repository.update_one(pk=pk, **data.model_dump(mode="json"))
+    return entities.RecordReadSchema.model_validate(updated_instance)
+
+
+@router.delete("{pk}/")
+async def delete(
+    user: typing.Annotated[
+        models.User,
+        fastapi.Depends(dependencies.auth_user),
+    ],
+    pk: int,
+) -> fastapi.Response:
+    """Delete `Record` instance."""
+    user_is_employee(user=user)
+    repository = await repositories.RecordRepository.create_repository()
+    is_deleted = await repository.delete_one(pk=pk)
+    if not is_deleted:
+        raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
+    return fastapi.Response(status_code=http.HTTPStatus.NO_CONTENT)
