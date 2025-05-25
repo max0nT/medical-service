@@ -44,6 +44,7 @@ class AuthClient:
         user = await repository.create_one(
             email=data.email,
             password=hashed_password,
+            role=models.User.Role.client.value,
         )
         token = self.setup_token(user=user)
         return token, user
@@ -55,7 +56,7 @@ class AuthClient:
             status_code=http.HTTPStatus.BAD_REQUEST,
             detail={"detail": "Wrong email or password."},
         )
-        result_list = await repository.get_list(email=data.email)
+        result_list = await repository.get_list()
         if not result_list:
             raise exception
         user = result_list[0]

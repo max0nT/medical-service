@@ -38,6 +38,7 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
         raw_result = await self.session.execute(
             sqlalchemy.select(self.model).filter_by(**data),
         )
+        self.session.expunge_all()
         await self._close_session()
         return raw_result.scalars().all()
 
@@ -48,7 +49,7 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
         """Create isntance."""
         instance = self.model(**data)
         self.session.add(instance)
-        await self.session.flush()
+        await self._close_session()
         return instance
 
     async def retrieve_one(
@@ -90,5 +91,8 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
 
     async def _close_session(self) -> None:
         """Close db session."""
+        await self.session.flush()
+        self.session.expunge_all()
         await self.session.commit()
+        await self.session.close()
         await self.generator.aclose()
