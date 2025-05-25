@@ -8,11 +8,11 @@ database_url = URL.create(
     "postgresql+asyncpg",
     username="postgres",
     password="postgres",
-    host="127.0.0.1",
+    host="0.0.0.0",
     port=5435,
     database="postgres",
 )
-engine = create_async_engine(database_url.render_as_string())
+engine = create_async_engine(database_url)
 session_factory = async_sessionmaker(engine)
 
 

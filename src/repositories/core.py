@@ -46,11 +46,10 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
         **data: typing.Any,
     ) -> ModelClass:
         """Create isntance."""
-        raw_result = await self.session.execute(
-            sqlalchemy.insert(self.model).values(**data),
-        )
-        await self._close_session()
-        return raw_result.scalar_one()
+        instance = self.model(**data)
+        self.session.add(instance)
+        await self.session.flush()
+        return instance
 
     async def retrieve_one(
         self,
@@ -66,7 +65,7 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
         pk: int,
         **data: typing.Any,
     ) -> ModelClass | None:
-        """Update instance."""
+        """Update instance by pk."""
         raw_result = await self.session.execute(
             sqlalchemy.update(self.model).where(self.model.id == pk).values(**data),
         )
@@ -91,4 +90,5 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
 
     async def _close_session(self) -> None:
         """Close db session."""
+        await self.session.commit()
         await self.generator.aclose()

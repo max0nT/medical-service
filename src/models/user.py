@@ -46,16 +46,5 @@ class User(BaseModel):
     role = sqlalchemy.Column(
         name="role",
         type_=sqlalchemy.Enum(Role),
-        default=Role.admin,
-    )
-
-    created_records = sqlalchemy.orm.relationship(
-        "Record",
-        back_populates="created_by",
-        lazy="joined",
-    )
-    reserved_records = sqlalchemy.orm.relationship(
-        "Record",
-        back_populates="reserved_by",
-        lazy="joined",
+        default=Role.client,
     )

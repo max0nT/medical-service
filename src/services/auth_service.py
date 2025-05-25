@@ -20,7 +20,10 @@ class AuthClient:
         """Init Auth client instance."""
         return cls()
 
-    async def sign_up(self, data: entities.UserSignUpSchema) -> str:
+    async def sign_up(
+        self,
+        data: entities.UserSignUpSchema,
+    ) -> tuple[str, models.User]:
         """Create user logic."""
         repository = await repositories.UserRepository.create_repository()
         check_exist = await repository.get_list(email=data.email)
@@ -43,7 +46,7 @@ class AuthClient:
             password=hashed_password,
         )
         token = self.setup_token(user=user)
-        return token
+        return token, user
 
     async def authenticate(self, data: entities.UserSignInSchema) -> str:
         """Implement user signing in if all correct return access token."""

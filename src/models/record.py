@@ -27,17 +27,4 @@ class Record(BaseModel):
         type_=sqlalchemy.DateTime(),
     )
 
-    created_by = sqlalchemy.orm.relationship(
-        "User",
-        single_parent=True,
-        back_populates="created_records",
-        lazy="joined",
-    )
-    reserved_by = sqlalchemy.orm.relationship(
-        "User",
-        single_parent=True,
-        back_populates="reserved_records",
-        lazy="joined",
-    )
-
     __tableargs__ = (CheckConstraint("crerated_by_id != reserved_by_id"),)

@@ -8,8 +8,8 @@ from .core import BaseReadModelSchema
 class RecordReadSchema(BaseReadModelSchema):
     """Describe `Record` schema for readable actions."""
 
-    created_by_id: int
-    reserved_by_id: int
+    created_by_id: int | None
+    reserved_by_id: int | None
     start: datetime.date
     end: datetime.date
 
