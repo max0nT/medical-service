@@ -11,6 +11,7 @@ router = fastapi.APIRouter(prefix="/users", tags=["Users"])
 @router.post(
     "/sign-up/",
     response_model=entities.UserReadSchema,
+    status_code=http.HTTPStatus.CREATED,
 )
 async def sign_up(
     data: entities.UserSignUpSchema,
@@ -23,18 +24,19 @@ async def sign_up(
     return entities.UserReadSchema.model_validate(new_user).model_dump(mode="json")
 
 
-@router.post("/sign-in/")
+@router.post(
+    "/login/",
+    response_model=entities.AuthToken,
+)
 async def login(
     data: entities.UserSignInSchema,
-) -> fastapi.Response:
+) -> entities.AuthToken:
     """Sign in for client."""
     token = await (
         services.AuthClient.create_auth_client()
         .authenticate(data=data)
     )
-    return {
-        "access_token": token
-    }
+    return entities.AuthToken(access_token=token)
 
 
 @router.post(
@@ -55,8 +57,9 @@ async def logout(
     )
     return response
 
+
 @router.get(
-    path="/me",
+    path="/me/",
     response_model=entities.UserReadSchema,
 )
 async def me(
@@ -69,6 +72,7 @@ async def me(
     return (
         entities.UserReadSchema.model_validate(user).model_dump(mode="json")
     )
+
 
 @router.get("/")
 async def get_list(

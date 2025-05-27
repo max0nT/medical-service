@@ -2,7 +2,7 @@ import http
 
 import fastapi
 
-from src import models, repositories
+from src import models
 
 
 def user_is_employee(user: models.User) -> None:

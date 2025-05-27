@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Text, ImageBackground, StyleSheet, Button, TextInput } from "react-native"
 import { useNavigation } from '@react-navigation/native'
-import signUpRequest from "../../api/auth"
+import { signUpRequest } from "../../api/auth"
 
 
 export default function SignUp() {
@@ -17,7 +17,7 @@ export default function SignUp() {
 
   return (
     <ImageBackground
-        source={require('../../assets/images/phone.png')}
+        source={require('@/assets/images/phone.png')}
         style={styles.container}
     >
       <Text style={styles.loginTitle}>
@@ -70,7 +70,7 @@ export default function SignUp() {
              async () => {
                 const [status, response] = await signUpRequest(signUp)
                 console.log(status)
-                if (status != 200){
+                if (status != 201){
                   setError(response.detail.detail)
                 }
                 else {
@@ -83,7 +83,7 @@ export default function SignUp() {
 
 
       <Button
-          title="Вход"
+          title="Уже есть аккаунт?"
           onPress={() => {navigator.navigate("Login")}}
       >
       </Button>
