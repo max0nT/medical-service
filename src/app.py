@@ -26,6 +26,7 @@ async def validation_exception_handler(
     exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
     logging.error(request, exc_str)
     content = {'status_code': 10422, 'message': exc_str, 'data': None}
+    print(await request.json())
     return fastapi.responses.JSONResponse(
         content=content,
         status_code=fastapi.status.HTTP_422_UNPROCESSABLE_ENTITY,

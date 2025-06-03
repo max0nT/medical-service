@@ -56,7 +56,7 @@ class AuthClient:
             status_code=http.HTTPStatus.BAD_REQUEST,
             detail={"detail": "Wrong email or password."},
         )
-        result_list = await repository.get_list()
+        result_list = await repository.get_list(email=data.email)
         if not result_list:
             raise exception
         user = result_list[0]
@@ -106,7 +106,7 @@ class AuthClient:
             )
         except jwt.exceptions.InvalidTokenError:
             raise fastapi.HTTPException(
-                status=http.HTTPStatus.UNAUTHORIZED,
+                status_code=http.HTTPStatus.UNAUTHORIZED,
                 detail={
                     "detail": "Token is invalid",
                 },

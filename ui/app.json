@@ -11,7 +11,6 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "aboba",
       "edgeToEdgeEnabled": true
     },
     "web": {
@@ -22,10 +21,14 @@
       "expo-router",
       [
         "expo-splash-screen"
-      ]
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "EXPO_ROUTER_APP_ROOT": "./app"
     }
   }
 }

@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Text, ImageBackground, StyleSheet, Button, TextInput } from "react-native"
-import { useNavigation } from '@react-navigation/native'
-import { signUpRequest } from "../../api/auth"
+import { Text, ImageBackground, StyleSheet, Button, TextInput } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+import { signUpRequest } from "@/api/auth";
+import { Link, router } from "expo-router";
+
 
 
 export default function SignUp() {
@@ -12,8 +14,8 @@ export default function SignUp() {
       password: '',
       password_repeat: '',
     },
-  )
-  const [error, setError] = useState("")
+  );
+  const [error, setError] = useState("");
 
   return (
     <ImageBackground
@@ -68,29 +70,25 @@ export default function SignUp() {
             title="Зарегистрироваться"
             onPress={
              async () => {
-                const [status, response] = await signUpRequest(signUp)
-                console.log(status)
+                const [status, response] = await signUpRequest(signUp);
+                console.log(status);
                 if (status != 201){
-                  setError(response.detail.detail)
+                  setError(response.detail.detail);
                 }
                 else {
-                  setError("Успешная регистрация")
+                  setError("Успешная регистрация");
                 }
               }
             }
           >
           </Button>
 
-
-      <Button
-          title="Уже есть аккаунт?"
-          onPress={() => {navigator.navigate("Login")}}
-      >
-      </Button>
-
+          <Link href="/login" asChild>
+            <Button title="Уже есть аккаунт?" />
+          </Link>
 
     </ImageBackground>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

@@ -1,4 +1,6 @@
 import axios, { AxiosInstance } from "axios"
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { User, UserWrite } from '@/api/schemes'
 
 const HOSTNAME = "http://10.0.2.2:8000"
 
@@ -61,22 +63,58 @@ export async function signUpRequest(
 export async function loginRequest(
     data: any,
 ): Promise<[number, object]> {
-    const [status_code, response_body] = await authRequest("login/", data)
-    console.log(status_code)
-    console.log(response_body.access_token)
-    if (status_code == 200) {
-        localStorage.setItem("access_token", response_body.access_token)
-    }
-    return [status_code, response_body]
+    return await authRequest("login/", data)
 }
 
 
 export async function meRequest(): Promise<[number, object]> {
-    return await authRequest(
+    let status: number = client_error_status_code;
+    let response_body: object = client_error;
+    await api_client.get(
         "me/",
         {
-            "Authorization": localStorage.getItem("access_token"),
-        },
+            headers: {
+                Authorization: `Bearer ${await AsyncStorage.getItem("access_token")}`
+            }
+        }
     )
+    .then(
+        response => {
+            status = response.status;
+            response_body = response.data;
+        }
+    )
+    .catch(
+        error => {
+            console.log(error);
+        }
+    )
+    return [status, response_body]
+}
 
+
+export async function updateUserRequest(user: UserWrite, id: number): Promise<number, object>{
+    let status: number = client_error_status_code;
+    let response_body: object = client_error;
+    await api_client.put(
+        `${id}/`,
+        user,
+        {
+            headers: {
+                Authorization: `Bearer ${await AsyncStorage.getItem("access_token")}`
+            }
+        }
+    )
+    .then(
+        response => {
+            status = response.status;
+            response_body = response.data;
+        }
+    )
+    .catch(
+        error => {
+            console.log(error);
+        }
+    )
+    return [status, response_body]
 }

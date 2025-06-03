@@ -105,3 +105,24 @@ async def retrieve(
         raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
 
     return entities.UserReadSchema.model_validate(instance)
+
+
+@router.put("/{pk}/")
+async def update(
+    user: typing.Annotated[
+        models.User,
+        fastapi.Depends(dependencies.auth_user),
+    ],
+    pk: int,
+    data: entities.UserWriteSchema,
+) -> entities.UserReadSchema:
+    """Update `Record` instance."""
+
+    repository = await repositories.UserRepository.create_repository()
+    instance = await repository.retrieve_one(pk=pk)
+    if not instance:
+        raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
+
+    await repository.reconnect()
+    updated_instance = await repository.update_one(pk=pk, **data.model_dump())
+    return entities.UserReadSchema.model_validate(updated_instance)
