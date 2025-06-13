@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ImageBackground, StyleSheet, TextInput, TouchableOpacity, Text, View, Alert, Switch } from 'react-native';
-import { meRequest, updateUserRequest } from '@/api/auth';
-import { User, UserWrite } from '@/api/schemes';
+import { meRequest, updateUserRequest } from '@/api/user/crud';
+import { User, UserWrite } from '@/api/user/schemes';
 import { Link, router } from "expo-router";
 
 

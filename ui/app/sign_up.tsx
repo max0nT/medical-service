@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Text, ImageBackground, StyleSheet, Button, TextInput } from "react-native";
 import { useNavigation } from '@react-navigation/native';
-import { signUpRequest } from "@/api/auth";
+import { signUpRequest } from "@/api/user/auth";
 import { Link, router } from "expo-router";
 
 

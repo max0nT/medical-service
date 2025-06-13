@@ -15,16 +15,3 @@ export interface UserWrite {
     last_name?: string
     sync_with_google_calendar?: boolean
 }
-
-export interface Record {
-    id: number;
-    created_by_id: number | null;
-    reserved_by_id: number | null;
-    start: string;
-    end: string;
-}
-
-export interface RecordWrite {
-    start: string;
-    end: string;
-}

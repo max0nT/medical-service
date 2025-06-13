@@ -1,7 +1,7 @@
 import { ImageBackground, StyleSheet, Text, Button, TextInput } from "react-native";
 import { useState } from "react";
 import { Link, router } from "expo-router";
-import { loginRequest } from "@/api/auth";
+import { loginRequest } from "@/api/user/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login() {
