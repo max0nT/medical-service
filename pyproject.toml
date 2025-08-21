@@ -7,18 +7,37 @@ python = "^3.12"
 # Framework to make backend apps
 # https://pypi.org/project/fastapi/
 fastapi = "^0.115.12"
-ruff = "^0.11.7"
+# Manager for db migrations based on sqlalchemy
+# https://github.com/sqlalchemy/alembic
 alembic = "1.13.2"
+# Async orm for python
+# https://www.sqlalchemy.org/
 sqlalchemy = "^2.0.40"
+# Async engine for postgres
+# https://github.com/MagicStack/asyncpg
 asyncpg = "^0.30.0"
+# Manage data for API
+# https://docs.pydantic.dev/latest/
 pydantic = "^2.11.3"
+# ASGI for backend
+# https://github.com/encode/uvicorn
 uvicorn = "0.34.1"
-basedpyright = "^1.29.1"
+# Extension for password encryption
+# https://passlib.readthedocs.io/en/stable/
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+# Tool to manage environment variables
+# https://pypi.org/project/python-decouple/
 python-decouple = "^3.8"
+# Tool to generate jwt tokens
+# https://pyjwt.readthedocs.io/en/stable/
 pyjwt = "^2.10.1"
+# Easier to manage datetime objects
+# https://arrow.readthedocs.io/en/latest/
 arrow = "^1.3.0"
-bcrypt = "4.0.1"
+# The best linter written on rust
+# https://docs.astral.sh/ruff/
+ruff = "^0.11.7"
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
