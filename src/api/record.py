@@ -36,10 +36,7 @@ async def get_list(
     result_list = await repository.get_list(
         **filters,
     )
-    return [
-        entities.RecordReadSchema.model_validate(record)
-        for record in result_list
-    ]
+    return [entities.RecordReadSchema.model_validate(record) for record in result_list]
 
 
 @router.get("/{pk}/")
@@ -118,7 +115,6 @@ async def reserve(
         record=instance,
     )
     return entities.RecordReadSchema.model_validate(updated_instance)
-
 
 
 @router.delete("{pk}/")

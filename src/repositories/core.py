@@ -68,7 +68,7 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
     ) -> ModelClass | None:
         """Update instance by pk."""
         await self.session.execute(
-            sqlalchemy.update(self.model).where(self.model.id == pk).values(**data)
+            sqlalchemy.update(self.model).where(self.model.id == pk).values(**data),
         )
         await self.session.commit()
         result = await self.session.get(self.model, pk)
@@ -81,7 +81,7 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
     ) -> int:
         """Delete instance."""
         raw_result = await self.session.execute(
-            sqlalchemy.delete(self.model).where(self.model.id == pk)
+            sqlalchemy.delete(self.model).where(self.model.id == pk),
         )
         await self._close_session()
         return raw_result.rowcount

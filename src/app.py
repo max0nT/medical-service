@@ -1,5 +1,3 @@
-import logging
-
 import fastapi
 import fastapi.middleware
 import fastapi.middleware.cors

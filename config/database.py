@@ -13,10 +13,7 @@ database_url = URL.create(
     port=5435,
     database="postgres",
 )
-engine = create_async_engine(
-    database_url,
-    poolclass=NullPool
-)
+engine = create_async_engine(database_url, poolclass=NullPool)
 session_factory = async_sessionmaker(engine)
 
 
