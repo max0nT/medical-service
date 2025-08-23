@@ -3,7 +3,7 @@ import typing
 from sqlalchemy.pool import NullPool
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base, decl_api
 
 database_url = URL.create(
     "postgresql+asyncpg",
@@ -23,4 +23,4 @@ async def session_generator() -> typing.AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-Base = declarative_base()
+Base: decl_api.DeclarativeBase = declarative_base()

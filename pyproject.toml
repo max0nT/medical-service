@@ -46,7 +46,19 @@ invoke = "^2.2.0"
 # Great invoke commands
 # https://github.com/saritasa-nest/saritasa-invocations
 saritasa-invocations = "^1.6.0"
-
+# Framework for tests on python
+# https://docs.pytest.org/en/stable/contents.html
+pytest = "^8.4.1"
+# Provide asynchronous mode for tests
+# https://pytest-asyncio.readthedocs.io/en/stable/
+pytest-asyncio = "^1.1.0"
+# Provide pretty print of output for tests
+# https://pypi.org/project/pytest-sugar/
+pytest-sugar = "^1.1.1"
+# Generate instances
+# https://factoryboy.readthedocs.io/en/stable/
+factory-boy = "^3.3.3"
+sqlalchemy-utils = "^0.41.2"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -55,3 +67,16 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "config/__init__.py" = ["F403"]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+    "src"
+]
+addopts = [
+    "--asyncio-mode=auto",
+    "--ff",
+    "--verbose",
+    "--cache-clear"
+]
+asyncio_default_test_loop_scope = "session"

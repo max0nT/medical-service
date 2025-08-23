@@ -21,3 +21,11 @@ repos:
     hooks:
       - id: poetry-check
         args: [--lock]
+  - repo: local
+    hooks:
+      - id: run-tests
+        name: run tests
+        entry: inv pytest.run
+        language: system
+        types: [ python ]
+        pass_filenames: false

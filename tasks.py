@@ -8,7 +8,9 @@ ns = invoke.Collection(
     saritasa_invocations.github_actions,
     saritasa_invocations.pre_commit,
     saritasa_invocations.system,
-    saritasa_invocations.fastapi
+    saritasa_invocations.fastapi,
+    saritasa_invocations.pytest,
+    saritasa_invocations.alembic,
 )
 
 # Configurations for run command
@@ -24,20 +26,18 @@ ns.configure(
                     "pre-commit",
                     "pre-push",
                     "commit-msg",
-                )
+                ),
             ),
             git=saritasa_invocations.GitSettings(
                 merge_ff="true",
                 pull_ff="only",
             ),
             docker=saritasa_invocations.DockerSettings(
-                main_containers=(
-                    "postgres",
-                ),
+                main_containers=("postgres",),
             ),
             fastapi=saritasa_invocations.FastAPISettings(
                 app="src.app:app",
-            )
+            ),
         ),
     },
 )
