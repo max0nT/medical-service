@@ -2,6 +2,7 @@ import factory
 from sqlalchemy.ext import asyncio as asyncio_ext
 from sqlalchemy.orm import decl_api
 
+
 class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
     """Base Factory class for testing.
 
@@ -31,7 +32,4 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         session: asyncio_ext.AsyncSession,
         **kwargs,
     ):
-        return [
-            await cls(session=session, **kwargs)
-            for _ in range(size)
-        ]
+        return [await cls(session=session, **kwargs) for _ in range(size)]

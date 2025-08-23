@@ -10,9 +10,7 @@ from sqlalchemy.ext import asyncio as asyncio_ext
 @pytest.fixture(scope="session")
 def engine() -> asyncio_ext.AsyncEngine:
     """Init engine for testing."""
-    return asyncio_ext.create_async_engine(
-        database.database_url
-    )
+    return asyncio_ext.create_async_engine(database.database_url)
 
 
 @pytest.fixture(scope="session")
@@ -33,4 +31,3 @@ async def session(
     session: asyncio_ext.AsyncSession = session_factory()
     yield session
     await session.close()
-
