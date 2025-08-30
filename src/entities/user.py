@@ -2,7 +2,7 @@ import pydantic
 
 from src.models import User
 
-from .core import BaseReadModelSchema
+from .core import BaseReadModelSchema, BaseModelSchema
 
 
 class UserReadSchema(BaseReadModelSchema):
@@ -24,7 +24,7 @@ class UserWriteSchema(pydantic.BaseModel):
     sync_with_google_calendar: bool
 
 
-class UserSignUpSchema(pydantic.BaseModel):
+class UserSignUpSchema(BaseModelSchema):
     """Model fro signing up."""
 
     email: str
@@ -32,7 +32,7 @@ class UserSignUpSchema(pydantic.BaseModel):
     password_repeat: str
 
 
-class UserSignInSchema(pydantic.BaseModel):
+class UserSignInSchema(BaseModelSchema):
     """Model for signing in."""
 
     email: str

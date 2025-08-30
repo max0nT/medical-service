@@ -14,7 +14,7 @@ database_url = URL.create(
     database="postgres",
 )
 engine = create_async_engine(database_url, poolclass=NullPool)
-session_factory = async_sessionmaker(engine)
+session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def session_generator() -> typing.AsyncGenerator[AsyncSession, None]:

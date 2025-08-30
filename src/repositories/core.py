@@ -35,30 +35,31 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
 
     async def get_list(self, **data: typing.Any) -> typing.Sequence[ModelClass]:
         """Return list of records from database."""
-        raw_result = await self.session.execute(
-            sqlalchemy.select(self.model).filter_by(**data),
-        )
-        self.session.expunge_all()
-        await self._close_session()
+        async with self.session:
+            raw_result = await self.session.execute(
+                sqlalchemy.select(self.model).filter_by(**data),
+            )
         return raw_result.scalars().all()
 
     async def create_one(
         self,
         **data: typing.Any,
     ) -> ModelClass:
-        """Create isntance."""
+        """Create instance."""
         instance = self.model(**data)
-        self.session.add(instance)
-        await self._close_session()
+        async with self.session:
+            self.session.add(instance)
+            await self.session.commit()
+            await self.session.refresh(instance)
         return instance
 
     async def retrieve_one(
         self,
         pk: int,
     ) -> ModelClass | None:
-        """Retrun one instance by pk."""
-        raw_result = await self.session.get(self.model, pk)
-        await self._close_session()
+        """Return one instance by pk."""
+        async with self.session:
+            raw_result = await self.session.get(self.model, pk)
         return raw_result
 
     async def update_one(
@@ -67,34 +68,28 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
         **data: typing.Any,
     ) -> ModelClass | None:
         """Update instance by pk."""
-        await self.session.execute(
-            sqlalchemy.update(self.model).where(self.model.id == pk).values(**data),
-        )
-        await self.session.commit()
-        result = await self.session.get(self.model, pk)
-        await self._close_session()
-        return result
+        async with self.session:
+            result = await self.session.execute(
+                sqlalchemy.update(self.model)
+                .where(self.model.id == pk)
+                .values(**data)
+                .returning(),
+            )
+            await self.session.commit()
+        return result.fetchone()
 
     async def delete_one(
         self,
         pk: int,
     ) -> int:
         """Delete instance."""
-        raw_result = await self.session.execute(
-            sqlalchemy.delete(self.model).where(self.model.id == pk),
-        )
-        await self._close_session()
-        return raw_result.rowcount
+        async with self.session:
+            result = await self.session.execute(
+                sqlalchemy.delete(self.model).where(self.model.id == pk),
+            )
+        return result.rowcount
 
     async def reconnect(self) -> None:
         """Setup db session again."""
         self.generator = settings.session_generator()
         self.session = await self.generator.asend(None)
-
-    async def _close_session(self) -> None:
-        """Close db session."""
-        await self.session.flush()
-        self.session.expunge_all()
-        await self.session.commit()
-        await self.session.close()
-        await self.generator.aclose()

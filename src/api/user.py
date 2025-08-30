@@ -16,7 +16,7 @@ router = fastapi.APIRouter(prefix="/users", tags=["Users"])
 )
 async def sign_up(
     data: entities.UserSignUpSchema,
-) -> fastapi.Response:
+) -> entities.UserReadSchema:
     """Sign up for clients."""
     _, new_user = await services.AuthClient.create_auth_client().sign_up(data=data)
     return entities.UserReadSchema.model_validate(new_user).model_dump(mode="json")

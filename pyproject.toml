@@ -58,7 +58,9 @@ pytest-sugar = "^1.1.1"
 # Generate instances
 # https://factoryboy.readthedocs.io/en/stable/
 factory-boy = "^3.3.3"
-sqlalchemy-utils = "^0.41.2"
+# Http client for testing
+# https://www.python-httpx.org/
+httpx = "^0.28.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

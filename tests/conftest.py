@@ -1,33 +1,41 @@
 import typing
 
-from config import database
-
 import pytest
-
+import httpx
 from sqlalchemy.ext import asyncio as asyncio_ext
 
-
-@pytest.fixture(scope="session")
-def engine() -> asyncio_ext.AsyncEngine:
-    """Init engine for testing."""
-    return asyncio_ext.create_async_engine(database.database_url)
+from config import database
+from src.app import app
+from src import models, factories
 
 
 @pytest.fixture(scope="session")
-async def session_factory(
-    engine: asyncio_ext.AsyncEngine,
-) -> typing.AsyncGenerator[asyncio_ext.async_sessionmaker, None]:
-    """Init schema in testing database."""
-    async with engine.begin() as connection:
-        yield asyncio_ext.async_sessionmaker(bind=connection)
+async def session_factory() -> typing.AsyncGenerator[
+    asyncio_ext.async_sessionmaker,
+    None,
+]:
+    """Init test transaction."""
+    async with database.engine.begin() as connection:
+        yield
         await connection.rollback()
 
 
 @pytest.fixture(scope="session")
-async def session(
-    session_factory: asyncio_ext.async_sessionmaker,
-) -> typing.AsyncGenerator[asyncio_ext.AsyncSession, None]:
-    """Init global session for testing."""
-    session: asyncio_ext.AsyncSession = session_factory()
-    yield session
-    await session.close()
+def client() -> httpx.AsyncClient:
+    """Init http client for tests."""
+    return httpx.AsyncClient(
+        transport=httpx.ASGITransport(
+            app=app,
+        ),
+        base_url="http://api",
+    )
+
+
+@pytest.fixture(scope="session")
+async def user() -> typing.AsyncGenerator[models.User, None]:
+    """Return User instance."""
+    user = await factories.UserFactory()
+    yield user
+    async with database.session_factory() as session:
+        await session.delete(user)
+        await session.commit()

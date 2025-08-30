@@ -33,7 +33,8 @@ class AuthClient:
                 detail={"detail": f"User with email {data.email} already exists"},
             )
         if (
-            not (data.password and data.password_repeat)
+            data.password
+            and data.password_repeat
             and data.password != data.password_repeat
         ):
             raise fastapi.HTTPException(

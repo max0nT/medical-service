@@ -2,6 +2,8 @@ import factory
 from sqlalchemy.ext import asyncio as asyncio_ext
 from sqlalchemy.orm import decl_api
 
+from sqlalchemy.ext.asyncio import async_sessionmaker
+
 
 class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
     """Base Factory class for testing.
@@ -15,13 +17,22 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         cls,
         model_class: type[decl_api.DeclarativeBase],
         *args,
-        session: asyncio_ext.AsyncSession,
         **kwargs,
     ) -> decl_api.DeclarativeBase:
+        session_maker = getattr(
+            cls._meta,
+            "sqlalchemy_session_factory",
+            None,
+        )
+        assert (  # noqa: F631
+            isinstance(session_maker, async_sessionmaker),
+            f"{cls.__name__}.Meta.sessionmaker must be"
+            f" {async_sessionmaker.__name__}, not {type(session_maker)}",
+        )
         instance: decl_api.DeclarativeBase = model_class(*args, **kwargs)
-        async with session as session:
+        async with session_maker() as session:
             session.add(instance)
-            await session.flush()
+            await session.commit()
             await session.refresh(instance)
         return instance
 

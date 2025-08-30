@@ -4,7 +4,7 @@ import fastapi.middleware.cors
 
 from src import api
 
-app = fastapi.FastAPI()
+app = fastapi.FastAPI(redirect_slashes=False)
 app.include_router(api.record_api_router)
 app.include_router(api.user_api_router)
 app.add_middleware(
