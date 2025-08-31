@@ -15,7 +15,7 @@ async def test_sign_up(
     request_data = entities.UserSignUpSchema(
         email=str(uuid.uuid4()) + "@gmail.com",
         password="new_password",
-        password_repeat="new_password"
+        password_repeat="new_password",
     )
     response: httpx.Response = await client.post(
         url="/users/sign-up/",
@@ -41,23 +41,19 @@ async def test_sign_up_with_other_password(client: httpx.AsyncClient) -> None:
     request_data = entities.UserSignUpSchema(
         email=str(uuid.uuid4()) + "@gmail.com",
         password="new_password",
-        password_repeat="other_password"
+        password_repeat="other_password",
     )
     response: httpx.Response = await client.post(
         url="/users/sign-up/",
         content=request_data.model_dump_json(),
     )
 
-
     assert response.is_client_error
     assert response.status_code == httpx.codes.BAD_REQUEST
 
     response_data = json.loads(response.content)
 
-    assert (
-        response_data["detail"]["detail"]
-        == "Passwords don't match"
-    )
+    assert response_data["detail"]["detail"] == "Passwords don't match"
 
 
 async def test_sign_up_with_existing_email(
