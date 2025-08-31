@@ -47,15 +47,14 @@ async def login(
 async def logout(
     token: typing.Annotated[
         str,
-        dependencies.oauth2_scheme,
+        fastapi.Depends(dependencies.oauth2_scheme),
     ],
-    response: fastapi.Response,
 ) -> fastapi.Response:
     """Do logout."""
     await services.AuthClient.create_auth_client().move_token_to_black_list(
         token=token,
     )
-    return response
+    return fastapi.Response(status_code=http.HTTPStatus.NO_CONTENT)
 
 
 @router.get(

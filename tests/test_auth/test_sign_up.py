@@ -31,7 +31,7 @@ async def test_sign_up(
 
         assert instance and isinstance(instance, models.User)
         # Post test running
-        session.delete(instance)
+        await session.delete(instance)
         await session.commit()
 
 

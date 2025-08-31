@@ -95,9 +95,7 @@ class AuthClient:
 
     async def check_token_expired(self, token: str) -> bool:
         """Check that token in black list."""
-        repository = (
-            await repositories.BlackListRepostitory.create_repository()
-        )
+        repository = await repositories.BlackListRepository.create_repository()
         is_expired = await repository.get_list(value=token)
         return bool(is_expired)
 
@@ -120,7 +118,5 @@ class AuthClient:
 
     async def move_token_to_black_list(self, token: str) -> None:
         """Move JWT token to black list."""
-        repository = (
-            await repositories.BlackListRepostitory.create_repository()
-        )
+        repository = await repositories.BlackListRepository.create_repository()
         await repository.create_one(value=token)
