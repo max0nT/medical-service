@@ -66,6 +66,9 @@ httpx = "^0.28.1"
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.ruff]
+line-length = 79
+
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "config/__init__.py" = ["F403"]

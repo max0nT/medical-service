@@ -33,7 +33,9 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
         session = await generator.asend(None)
         return cls(session=session, generator=generator)
 
-    async def get_list(self, **data: typing.Any) -> typing.Sequence[ModelClass]:
+    async def get_list(
+        self, **data: typing.Any,
+    ) -> typing.Sequence[ModelClass]:
         """Return list of records from database."""
         async with self.session:
             raw_result = await self.session.execute(

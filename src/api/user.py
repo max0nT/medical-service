@@ -18,8 +18,12 @@ async def sign_up(
     data: entities.UserSignUpSchema,
 ) -> entities.UserReadSchema:
     """Sign up for clients."""
-    _, new_user = await services.AuthClient.create_auth_client().sign_up(data=data)
-    return entities.UserReadSchema.model_validate(new_user).model_dump(mode="json")
+    _, new_user = await services.AuthClient.create_auth_client().sign_up(
+        data=data,
+    )
+    return entities.UserReadSchema.model_validate(new_user).model_dump(
+        mode="json",
+    )
 
 
 @router.post(
@@ -30,7 +34,9 @@ async def login(
     data: entities.UserSignInSchema,
 ) -> entities.AuthToken:
     """Sign in for client."""
-    token = await services.AuthClient.create_auth_client().authenticate(data=data)
+    token = await services.AuthClient.create_auth_client().authenticate(
+        data=data,
+    )
     return entities.AuthToken(access_token=token)
 
 
@@ -46,7 +52,9 @@ async def logout(
     response: fastapi.Response,
 ) -> fastapi.Response:
     """Do logout."""
-    await services.AuthClient.create_auth_client().move_token_to_black_list(token=token)
+    await services.AuthClient.create_auth_client().move_token_to_black_list(
+        token=token,
+    )
     return response
 
 
@@ -74,7 +82,10 @@ async def get_list(
     """Retrun list of `User` instances."""
     repository = await repositories.UserRepository.create_repository()
     result_list = await repository.get_list()
-    return [entities.UserReadSchema.model_validate(record) for record in result_list]
+    return [
+        entities.UserReadSchema.model_validate(record)
+        for record in result_list
+    ]
 
 
 @router.get("/{pk}/")

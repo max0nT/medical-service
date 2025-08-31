@@ -23,8 +23,8 @@ async def test_sign_in(
     assert response.is_success
     assert response.status_code == httpx.codes.OK
 
-    response_data: entities.AuthToken = (
-        entities.AuthToken.model_validate_json(response.content)
+    response_data: entities.AuthToken = entities.AuthToken.model_validate_json(
+        response.content,
     )
     assert response_data
 
@@ -48,7 +48,4 @@ async def test_sign_in_with_wrong_data(
     assert response.status_code == httpx.codes.BAD_REQUEST
 
     response_data = json.loads(response.content)
-    assert (
-        response_data["detail"]["detail"]
-        == "Wrong email or password."
-    )
+    assert response_data["detail"]["detail"] == "Wrong email or password."
