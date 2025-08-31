@@ -72,14 +72,15 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
     ) -> ModelClass | None:
         """Update instance by pk."""
         async with self.session:
-            result = await self.session.execute(
+            raw = await self.session.execute(
                 sqlalchemy.update(self.model)
                 .where(self.model.id == pk)
                 .values(**data)
-                .returning(),
+                .returning(self.model),
             )
+            result = raw.scalar_one()
             await self.session.commit()
-        return result.fetchone()
+        return result
 
     async def delete_one(
         self,

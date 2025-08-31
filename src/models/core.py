@@ -1,9 +1,9 @@
 import sqlalchemy
 
-import config as settings
+from config import database
 
 
-class BaseModel(settings.Base):
+class BaseModel(database.Base):
     """Mode to setup base fields such as id, created, modified."""
 
     __abstract__ = True
@@ -26,3 +26,9 @@ class BaseModel(settings.Base):
         server_default=sqlalchemy.func.now(),
         onupdate=sqlalchemy.func.now(),
     )
+
+    async def refresh_from_db(self) -> None:
+        """Refresh instance from db."""
+        async with database.session_factory() as session:
+            session.add(self)
+            await session.refresh(self)

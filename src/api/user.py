@@ -95,7 +95,7 @@ async def retrieve(
     ],
     pk: int,
 ) -> entities.UserReadSchema:
-    """Retrun one `User` instance by id."""
+    """Return one `User` instance by id."""
     repository = await repositories.UserRepository.create_repository()
     instance = await repository.retrieve_one(pk=pk)
     if not instance:

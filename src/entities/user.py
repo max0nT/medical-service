@@ -1,5 +1,3 @@
-import pydantic
-
 from src.models import User
 
 from .core import BaseReadModelSchema, BaseModelSchema
@@ -15,7 +13,7 @@ class UserReadSchema(BaseReadModelSchema):
     role: User.Role
 
 
-class UserWriteSchema(pydantic.BaseModel):
+class UserWriteSchema(BaseModelSchema):
     """Model to editing `User` instances"""
 
     email: str

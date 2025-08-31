@@ -3,7 +3,7 @@ import httpx
 from src import models, entities
 
 
-async def test_profile(
+async def test_api(
     authorized_api_client: httpx.AsyncClient,
     user: models.User,
 ) -> None:
