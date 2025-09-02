@@ -6,7 +6,7 @@ import fastapi
 import jwt
 from passlib.context import CryptContext
 
-import config
+from config import settings
 from src import entities, models, repositories
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -83,13 +83,13 @@ class AuthClient:
         data = {
             "id": user.id,
             "exp": arrow.utcnow()
-            .shift(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
+            .shift(minutes=settings.access_token_expire_minutes)
             .datetime,
         }
         token = jwt.encode(
             payload=data,
-            key=config.SECRET_KEY,
-            algorithm=config.ALGORITHM,
+            key=settings.secret_key,
+            algorithm=settings.algorithm,
         )
         return token
 
@@ -104,8 +104,8 @@ class AuthClient:
         try:
             payload = jwt.decode(
                 token,
-                config.SECRET_KEY,
-                [config.ALGORITHM],
+                settings.secret_key,
+                [settings.algorithm],
             )
         except jwt.exceptions.InvalidTokenError:
             raise fastapi.HTTPException(

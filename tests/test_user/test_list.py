@@ -4,7 +4,7 @@ import pytest
 import pytest_lazy_fixtures
 import pydantic
 
-from config import database
+from config import settings
 from src import models, entities
 
 
@@ -41,7 +41,7 @@ async def test_api(
         list[entities.UserReadSchema],
     ).validate_json(response.content)
 
-    async with database.session_factory() as session:
+    async with settings.session_factory() as session:
         raw = await session.execute(
             sqlalchemy.select(models.User).where(
                 models.User.id.in_([entry.id for entry in response_data]),

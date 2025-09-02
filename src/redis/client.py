@@ -3,7 +3,7 @@ import datetime
 
 from redis import asyncio as aioredis, typing as redis_typing
 
-from config import redis_config
+from config import settings
 
 
 class RedisClient:
@@ -11,8 +11,8 @@ class RedisClient:
 
     def __init__(self):
         self.client: aioredis.Redis = aioredis.Redis(
-            host=redis_config.redis_host,
-            port=redis_config.redis_port,
+            host=settings.redis_host,
+            port=settings.redis_port,
         )
 
     async def set_value(
