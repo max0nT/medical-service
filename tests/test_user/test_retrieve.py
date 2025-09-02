@@ -19,7 +19,7 @@ from src import models, entities
             pytest_lazy_fixtures.lf("authorized_api_client"),
             httpx.codes.OK,
         ],
-    ]
+    ],
 )
 async def test_api(
     api_client: httpx.AsyncClient,
@@ -28,15 +28,15 @@ async def test_api(
 ) -> None:
     """Test user retrieve works correctly."""
 
-    response: httpx.Response = await api_client.get(
-        f"/users/{user.id}/"
-    )
+    response: httpx.Response = await api_client.get(f"/users/{user.id}/")
 
     assert response.status_code == expected_status_code
 
     if not response.is_success:
         return
 
-    response_data = entities.UserReadSchema.model_validate_json(response.content)
+    response_data = entities.UserReadSchema.model_validate_json(
+        response.content,
+    )
 
     assert response_data.id == user.id

@@ -13,5 +13,19 @@ services:
     volumes:
       - postgres_data:/var/postgresql/data
 
+  redis:
+    image: redis:latest
+    restart: always
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+
+
 volumes:
   postgres_data:

@@ -1,0 +1,26 @@
+{
+  "ignorePaths": [
+    ".gitignore",
+    "./requirements/*.txt",
+    ".tmp",
+    "fixtures",
+  ],
+  "ignoreRegExpList": [
+    "GHSA-.+"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "project-related-words",
+      "path": "./project-related-words.txt",
+      "addWords": true
+    }
+  ],
+  "dictionaries": [
+    "python",
+    "python-common",
+    "docker",
+    "django",
+    "project-related-words"
+  ],
+  "useGitignore": true
+}

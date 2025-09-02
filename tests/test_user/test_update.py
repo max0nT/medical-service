@@ -19,7 +19,7 @@ from src import models, entities
             pytest_lazy_fixtures.lf("authorized_api_client"),
             httpx.codes.OK,
         ],
-    ]
+    ],
 )
 async def test_api(
     api_client: httpx.AsyncClient,
