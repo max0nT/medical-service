@@ -6,7 +6,7 @@ import factory.fuzzy
 from .base import BaseFactory
 
 from src import models, services
-from config import database
+from config import settings
 
 USER_PASSWORD = "New_Password"
 
@@ -30,4 +30,4 @@ class UserFactory(BaseFactory):
 
     class Meta:
         model = models.User
-        sqlalchemy_session_factory = database.session_factory
+        sqlalchemy_session_factory = settings.session_factory

@@ -3,7 +3,7 @@ import json
 
 import httpx
 
-from config import database
+from config import settings
 from src import entities, models
 
 
@@ -26,7 +26,7 @@ async def test_sign_up(
     assert response.status_code == httpx.codes.CREATED
 
     response_data = json.loads(response.content)
-    async with database.session_factory() as session:
+    async with settings.session_factory() as session:
         instance = await session.get(models.User, response_data["id"])
 
         assert instance and isinstance(instance, models.User)

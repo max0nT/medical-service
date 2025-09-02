@@ -1,6 +1,8 @@
 argnames
+drivername
 lpos
 lpush
+poolclass
 saritasa
 sessionmaker
 setex

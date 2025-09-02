@@ -1,5 +1,9 @@
-from decouple import config
+import pydantic_settings
 
-SECRET_KEY = config("SECRET_KEY")
-ALGORITHM = config("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = config("ACCESS_TOKEN_EXPIRE_MINUTES", cast=int)
+
+class AuthSettings(pydantic_settings.BaseSettings):
+    """Settings class for auth."""
+
+    secret_key: str
+    algorithm: str
+    access_token_expire_minutes: int

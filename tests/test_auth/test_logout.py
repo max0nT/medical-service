@@ -1,7 +1,7 @@
 import httpx
 
 import sqlalchemy
-from config import database
+from config import settings
 from src import models, factories, entities
 
 
@@ -36,7 +36,7 @@ async def test_logout(
     assert logout_response.status_code == httpx.codes.NO_CONTENT
 
     # Ensure the token is in black list
-    async with database.session_factory() as session:
+    async with settings.session_factory() as session:
         raw = await session.execute(
             sqlalchemy.select(models.TokenBlackList).where(
                 models.TokenBlackList.value == token,
@@ -54,7 +54,7 @@ async def test_logout(
     assert profile_response.status_code == httpx.codes.UNAUTHORIZED
 
     # Post test
-    async with database.session_factory() as session:
+    async with settings.session_factory() as session:
         await session.delete(banned_token)
         await session.commit()
 

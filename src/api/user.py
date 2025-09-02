@@ -119,6 +119,5 @@ async def update(
     instance = await repository.retrieve_one(pk=pk)
     if not instance:
         raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
-
     updated_instance = await repository.update_one(pk=pk, **data.model_dump())
     return entities.UserReadSchema.model_validate(updated_instance)

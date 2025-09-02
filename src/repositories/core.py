@@ -3,7 +3,7 @@ from abc import ABC
 
 import sqlalchemy
 
-from config.database import session_factory
+from config import settings
 from src.models.core import BaseModel
 
 ModelClass = typing.TypeVar(
@@ -26,7 +26,7 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
         **data: typing.Any,
     ) -> typing.Sequence[ModelClass]:
         """Return list of records from database."""
-        async with session_factory() as session:
+        async with settings.session_factory() as session:
             raw_result = await session.execute(
                 sqlalchemy.select(self.model).filter_by(**data),
             )
@@ -38,7 +38,7 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
     ) -> ModelClass:
         """Create instance."""
         instance = self.model(**data)
-        async with session_factory() as session:
+        async with settings.session_factory() as session:
             session.add(instance)
             await session.commit()
             await session.refresh(instance)
@@ -49,7 +49,7 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
         pk: int,
     ) -> ModelClass | None:
         """Return one instance by pk."""
-        async with session_factory() as session:
+        async with settings.session_factory() as session:
             raw_result = await session.get(self.model, pk)
         return raw_result
 
@@ -59,15 +59,15 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
         **data: typing.Any,
     ) -> ModelClass | None:
         """Update instance by pk."""
-        async with session_factory() as session:
+        async with settings.session_factory() as session:
             raw = await session.execute(
                 sqlalchemy.update(self.model)
                 .where(self.model.id == pk)
                 .values(**data)
                 .returning(self.model),
             )
-            result = raw.scalar_one()
             await session.commit()
+            result = raw.scalar_one()
         return result
 
     async def delete_one(
@@ -75,7 +75,7 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
         pk: int,
     ) -> int:
         """Delete instance."""
-        async with session_factory() as session:
+        async with settings.session_factory() as session:
             result = await session.execute(
                 sqlalchemy.delete(self.model).where(self.model.id == pk),
             )

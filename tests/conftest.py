@@ -3,7 +3,7 @@ import typing
 import pytest
 import httpx
 
-from config import database
+from config import settings
 from src.app import app
 from src import models, factories, services, entities
 
@@ -23,7 +23,7 @@ async def user() -> typing.AsyncGenerator[models.User, None]:
     """Return User instance."""
     user = await factories.UserFactory()
     yield user
-    async with database.session_factory() as session:
+    async with settings.session_factory() as session:
         await session.delete(user)
         await session.commit()
 
