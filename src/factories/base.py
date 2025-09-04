@@ -1,8 +1,7 @@
 import factory
 from sqlalchemy.ext import asyncio as asyncio_ext
-from sqlalchemy.orm import decl_api
-
 from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.orm import decl_api
 
 
 class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):

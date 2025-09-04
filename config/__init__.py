@@ -1,12 +1,12 @@
 import pydantic_settings
-
-from .auth import AuthSettings
-from .database import PostgresSettings
-from .redis import RedisSettings
 from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+
+from .auth import AuthSettings
+from .database import PostgresSettings
+from .redis import RedisSettings
 
 
 class Settings(

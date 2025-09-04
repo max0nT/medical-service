@@ -1,6 +1,6 @@
 import httpx
 
-from src import models, entities
+from src import entities, models
 
 
 async def test_api(

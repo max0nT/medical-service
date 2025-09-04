@@ -2,7 +2,7 @@ import json
 
 import httpx
 
-from src import models, factories, entities
+from src import entities, factories, models
 
 
 async def test_sign_in(

@@ -1,8 +1,9 @@
 import httpx
-
 import sqlalchemy
+
 from config import settings
-from src import models, factories, entities
+
+from src import entities, factories, models
 
 
 async def test_logout(

@@ -1,6 +1,6 @@
 from src.models import User
 
-from .core import BaseReadModelSchema, BaseModelSchema
+from .core import BaseModelSchema, BaseReadModelSchema
 
 
 class UserReadSchema(BaseReadModelSchema):

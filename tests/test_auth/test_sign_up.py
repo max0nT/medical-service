@@ -1,9 +1,10 @@
-import uuid
 import json
+import uuid
 
 import httpx
 
 from config import settings
+
 from src import entities, models
 
 

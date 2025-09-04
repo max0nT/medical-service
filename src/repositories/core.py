@@ -4,6 +4,7 @@ from abc import ABC
 import sqlalchemy
 
 from config import settings
+
 from src.models.core import BaseModel
 
 ModelClass = typing.TypeVar(

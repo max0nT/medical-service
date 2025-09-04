@@ -1,11 +1,12 @@
 import typing
 
-import pytest
 import httpx
+import pytest
 
 from config import settings
+
+from src import entities, factories, models, services
 from src.app import app
-from src import models, factories, services, entities
 
 
 def client_factory() -> httpx.AsyncClient:

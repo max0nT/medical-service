@@ -1,7 +1,8 @@
-import typing
 import datetime
+import typing
 
-from redis import asyncio as aioredis, typing as redis_typing
+from redis import asyncio as aioredis
+from redis import typing as redis_typing
 
 from config import settings
 

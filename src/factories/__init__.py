@@ -1,1 +1,1 @@
-from .user import UserFactory, USER_PASSWORD
+from .user import USER_PASSWORD, UserFactory

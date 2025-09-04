@@ -1,11 +1,12 @@
 import httpx
-import sqlalchemy
+import pydantic
 import pytest
 import pytest_lazy_fixtures
-import pydantic
+import sqlalchemy
 
 from config import settings
-from src import models, entities
+
+from src import entities, models
 
 
 @pytest.mark.parametrize(

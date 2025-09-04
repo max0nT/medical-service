@@ -2,7 +2,7 @@ import httpx
 import pytest
 import pytest_lazy_fixtures
 
-from src import models, entities
+from src import entities, models
 
 
 @pytest.mark.parametrize(

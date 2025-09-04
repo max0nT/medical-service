@@ -3,10 +3,11 @@ import uuid
 import factory
 import factory.fuzzy
 
-from .base import BaseFactory
+from config import settings
 
 from src import models, services
-from config import settings
+
+from .base import BaseFactory
 
 USER_PASSWORD = "New_Password"
 

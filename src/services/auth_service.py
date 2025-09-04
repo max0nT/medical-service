@@ -1,12 +1,14 @@
 import http
 import typing
 
-import arrow
 import fastapi
+
+import arrow
 import jwt
 from passlib.context import CryptContext
 
 from config import settings
+
 from src import entities, models, repositories
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

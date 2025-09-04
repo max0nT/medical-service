@@ -1,10 +1,10 @@
+import pydantic_settings
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import (
-    async_sessionmaker,
     AsyncEngine,
+    async_sessionmaker,
 )
-from sqlalchemy.orm import declarative_base, decl_api
-import pydantic_settings
+from sqlalchemy.orm import decl_api, declarative_base
 
 
 class PostgresSettings(pydantic_settings.BaseSettings):

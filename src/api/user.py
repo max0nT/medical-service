@@ -1,10 +1,9 @@
+import http
 import typing
 
 import fastapi
 
-import http
-
-from src import services, entities, repositories, dependencies, models
+from src import dependencies, entities, models, repositories, services
 
 router = fastapi.APIRouter(prefix="/users", tags=["Users"])
 
