@@ -1,9 +1,7 @@
 import httpx
-import sqlalchemy
-
-from config import settings
 
 from src import entities, factories, models
+from src.redis.client import RedisAPIClient
 
 
 async def test_logout(
@@ -37,16 +35,10 @@ async def test_logout(
     assert logout_response.status_code == httpx.codes.NO_CONTENT
 
     # Ensure the token is in black list
-    async with settings.session_factory() as session:
-        raw = await session.execute(
-            sqlalchemy.select(models.TokenBlackList).where(
-                models.TokenBlackList.value == token,
-            ),
-        )
-        assert (banned_token_tuple := raw.fetchone())
-        banned_token: models.TokenBlackList = banned_token_tuple[0]
+    async with RedisAPIClient() as redis_client:
+        response = await redis_client.get_value(name=token)
 
-    assert banned_token.value == token
+    assert response
 
     # Ensure API doesn't allow to make request with banned token
     profile_response = httpx.Response = await client.get(url="/users/me/")
@@ -55,8 +47,7 @@ async def test_logout(
     assert profile_response.status_code == httpx.codes.UNAUTHORIZED
 
     # Post test
-    async with settings.session_factory() as session:
-        await session.delete(banned_token)
-        await session.commit()
+    async with RedisAPIClient() as redis_client:
+        await redis_client.delete_value(name=token)
 
     client.headers.pop("authorization")

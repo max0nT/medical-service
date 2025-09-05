@@ -113,7 +113,6 @@ async def update(
     data: entities.UserWriteSchema,
 ) -> entities.UserReadSchema:
     """Update `Record` instance."""
-
     repository = await repositories.UserRepository.create_repository()
     instance = await repository.retrieve_one(pk=pk)
     if not instance:

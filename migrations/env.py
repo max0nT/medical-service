@@ -6,32 +6,33 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-import config as settings
+from config import settings
+
+from src.models import Record, User  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 section = config.config_ini_section
-
 config.set_section_option(
     section,
     "DB_USER",
-    settings.database_url.username,
+    settings.postgres_user,
 )
 config.set_section_option(
     section,
     "DB_PASSWORD",
-    settings.database_url.password,
+    settings.postgres_password,
 )
 config.set_section_option(
     section,
     "DB_HOST",
-    settings.database_url.port,
+    settings.postgres_host,
 )
 config.set_section_option(
     section,
     "DB_NAME",
-    settings.database_url.database,
+    settings.postgres_db,
 )
 
 # Interpret the config file for Python logging.

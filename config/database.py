@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     async_sessionmaker,
 )
-from sqlalchemy.orm import decl_api, declarative_base
+from sqlalchemy.orm import decl_api
 
 
 class PostgresSettings(pydantic_settings.BaseSettings):
@@ -19,6 +19,7 @@ class PostgresSettings(pydantic_settings.BaseSettings):
 
     engine: AsyncEngine | None = None
     session_factory: async_sessionmaker | None = None
+    Base: decl_api.DeclarativeMeta | None = None
 
     @property
     def database_url(self) -> URL:
@@ -31,8 +32,3 @@ class PostgresSettings(pydantic_settings.BaseSettings):
             database=self.postgres_db,
             port=self.postgres_port,
         )
-
-    @property
-    def Base(self) -> decl_api.DeclarativeBase:
-        """Return Base class to describe models."""
-        return declarative_base()

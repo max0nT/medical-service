@@ -37,6 +37,9 @@ ns.configure(
             fastapi=saritasa_invocations.FastAPISettings(
                 app="src.app:app",
             ),
+            alembic=saritasa_invocations.AlembicSettings(
+                migrations_folder="migrations/versions",
+            ),
         ),
     },
 )

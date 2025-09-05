@@ -7,7 +7,7 @@ from redis import typing as redis_typing
 from config import settings
 
 
-class RedisClient:
+class RedisAPIClient:
     """Api client for redis database."""
 
     def __init__(self):
@@ -39,9 +39,17 @@ class RedisClient:
         )
         return response
 
-    async def __aenter__(self) -> aioredis.Redis:
-        """Return object as context handler."""
-        return await self.client.__aenter__()
+    async def delete_value(
+        self,
+        name: str,
+    ) -> typing.Any:
+        """Delete element."""
+        await self.client.delete(name)
 
-    async def _aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aenter__(self):
+        """Return object as context handler."""
+        await self.client.__aenter__()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         await self.client.__aexit__(exc_type, exc_val, exc_tb)

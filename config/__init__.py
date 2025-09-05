@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.orm import declarative_base
 
 from .auth import AuthSettings
 from .database import PostgresSettings
@@ -21,8 +22,12 @@ class Settings(
     )
 
 
-settings = Settings()
+()
+settings = Settings(
+    Base=declarative_base(),
+)
 settings.engine = create_async_engine(url=settings.database_url)
+
 settings.session_factory = async_sessionmaker(
     bind=settings.engine,
     expire_on_commit=False,

@@ -1,3 +1,4 @@
+import datetime
 import http
 import typing
 
@@ -10,6 +11,7 @@ from passlib.context import CryptContext
 from config import settings
 
 from src import entities, models, repositories
+from src.redis.client import RedisAPIClient
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -97,28 +99,43 @@ class AuthClient:
 
     async def check_token_expired(self, token: str) -> bool:
         """Check that token in black list."""
-        repository = await repositories.BlackListRepository.create_repository()
-        is_expired = await repository.get_list(value=token)
+        async with RedisAPIClient() as client:
+            is_expired = await client.get_value(name=token)
+
         return bool(is_expired)
 
-    def check_token_is_valid(self, token: str) -> int:
+    async def check_token_is_valid(self, token: str) -> int:
         """Check token is valid if yes return user id."""
+        errors: set = set()
+        payload = dict()
         try:
-            payload = jwt.decode(
+            payload: dict = jwt.decode(
                 token,
                 settings.secret_key,
                 [settings.algorithm],
             )
         except jwt.exceptions.InvalidTokenError:
+            errors.add("Token is invalid")
+        async with RedisAPIClient() as client:
+            is_banned = bool(await client.get_value(name=token))
+        if is_banned:
+            errors.add("Token is invalid")
+        if errors:
             raise fastapi.HTTPException(
                 status_code=http.HTTPStatus.UNAUTHORIZED,
                 detail={
-                    "detail": "Token is invalid",
+                    "detail": errors.pop(),
                 },
             )
         return payload.get("id")
 
     async def move_token_to_black_list(self, token: str) -> None:
         """Move JWT token to black list."""
-        repository = await repositories.BlackListRepository.create_repository()
-        await repository.create_one(value=token)
+        async with RedisAPIClient() as client:
+            await client.set_value(
+                key=token,
+                value="banned_token",
+                exp=datetime.timedelta(
+                    minutes=settings.access_token_expire_minutes,
+                ),
+            )
