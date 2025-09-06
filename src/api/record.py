@@ -58,7 +58,7 @@ async def retrieve(
     return entities.RecordReadSchema.model_validate(instance)
 
 
-@router.post("/")
+@router.post("/", status_code=http.HTTPStatus.CREATED)
 async def create(
     user: typing.Annotated[
         models.User,
@@ -71,12 +71,12 @@ async def create(
     repository = await repositories.RecordRepository.create_repository()
     instance: Record = await repository.create_one(
         created_by_id=user.id,
-        **data.model_dump(mode="json"),
+        **data.model_dump(),
     )
-    return entities.RecordReadSchema.model_dump(instance, mode="json")
+    return entities.RecordReadSchema.model_validate(instance)
 
 
-@router.put("{pk}/")
+@router.put("/{pk}/")
 async def update(
     user: typing.Annotated[
         models.User,
@@ -93,7 +93,6 @@ async def update(
     if not instance:
         raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
 
-    await repository.reconnect()
     updated_instance = await repository.update_one(pk=pk, **data.model_dump())
     return entities.RecordReadSchema.model_validate(updated_instance)
 
@@ -119,7 +118,7 @@ async def reserve(
     return entities.RecordReadSchema.model_validate(updated_instance)
 
 
-@router.delete("{pk}/")
+@router.delete("/{pk}/")
 async def delete(
     user: typing.Annotated[
         models.User,

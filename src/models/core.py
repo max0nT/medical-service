@@ -1,6 +1,8 @@
 import enum
+import typing
 
 import sqlalchemy
+import sqlalchemy.orm as orm
 
 from config import settings
 
@@ -44,8 +46,22 @@ class BaseModel(settings.Base):
         onupdate=sqlalchemy.func.now(),
     )
 
+    @property
+    def model_name(self) -> type[typing.Self]:
+        return self.__class__
+
     async def refresh_from_db(self) -> None:
         """Refresh instance from db."""
         async with settings.session_factory() as session:
             session.add(self)
             await session.refresh(self)
+
+    async def joined_load(self, *relationships) -> typing.Self:
+        async with settings.session_factory() as session:
+            raw = await session.execute(
+                sqlalchemy.select(self.model_name)
+                .options(orm.joinedload(*relationships))
+                .filter_by(id=self.id),
+            )
+            instance = raw.scalar_one()
+        return instance

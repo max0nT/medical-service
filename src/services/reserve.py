@@ -12,10 +12,10 @@ async def reserve(user: models.User, record: models.Record):
             status_code=http.HTTPStatus.BAD_REQUEST,
             detail={"detail": "Record was reserved"},
         )
-    reserve_by_id = user.id if record.reserve_by_id else None
+    reserved_by_id = user.id if record.reserved_by_id else None
     repository = await repositories.RecordRepository.create_repository()
-    updated_instace = await repository.update_one(
+    updated_instance = await repository.update_one(
         pk=record.id,
-        reserve_by_id=reserve_by_id,
+        reserved_by_id=reserved_by_id,
     )
-    return updated_instace
+    return updated_instance

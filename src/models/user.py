@@ -1,6 +1,8 @@
 import enum
 
 import sqlalchemy
+import sqlalchemy.dialects
+import sqlalchemy.dialects.postgresql
 
 from .core import BaseModel
 
@@ -9,6 +11,7 @@ class User(BaseModel):
     """Model to describe user keeping data."""
 
     __tablename__ = "users"
+    __table_args__ = {"keep_existing": True}
 
     email = sqlalchemy.Column(
         name="email",
@@ -45,6 +48,9 @@ class User(BaseModel):
 
     role = sqlalchemy.Column(
         name="role",
-        type_=sqlalchemy.Enum(Role),
-        default=Role.client,
+        type_=sqlalchemy.dialects.postgresql.ENUM(
+            Role,
+            name="role",
+        ),
+        default="client",
     )

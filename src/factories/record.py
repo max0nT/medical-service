@@ -12,7 +12,7 @@ class RecordFactory(BaseFactory):
 
     created_by = factory.SubFactory(
         "src.factories.user.UserFactory",
-        role=models.User.Role.admin,
+        role=models.User.Role.employee,
     )
     reserved_by = factory.SubFactory(
         "src.factories.user.UserFactory",

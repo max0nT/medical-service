@@ -5,25 +5,16 @@ import pytest
 
 from config import settings
 
-from src import entities, factories, models, services
-from src.app import app
+from src import factories, models
 
-
-def client_factory() -> httpx.AsyncClient:
-    """Generate api client."""
-    return httpx.AsyncClient(
-        transport=httpx.ASGITransport(
-            app=app,
-        ),
-        base_url="http://api",
-    )
+from . import utils
 
 
 @pytest.fixture(scope="session")
 async def user() -> typing.AsyncGenerator[models.User, None]:
-    """Return admin User instance."""
+    """Return employee User instance."""
     user = await factories.UserFactory(
-        role=models.User.Role.admin,
+        role=models.User.Role.employee,
     )
     yield user
     async with settings.session_factory() as session:
@@ -48,7 +39,7 @@ async def user_as_client() -> typing.AsyncGenerator[models.User, None]:
 async def record() -> typing.AsyncGenerator[models.Record, None]:
     """Return Record instance."""
     record = await factories.RecordFactory.create()
-    yield record
+    yield await record.joined_load("*")
     async with settings.session_factory() as session:
         await session.delete(record)
         await session.commit()
@@ -57,7 +48,7 @@ async def record() -> typing.AsyncGenerator[models.Record, None]:
 @pytest.fixture(scope="session")
 def client() -> httpx.AsyncClient:
     """Init http client for tests."""
-    return client_factory()
+    return utils.client_factory()
 
 
 @pytest.fixture(scope="session")
@@ -65,13 +56,4 @@ async def authorized_api_client(
     user: models.User,
 ) -> httpx.AsyncClient:
     """Return authorized api client."""
-    authorizer = services.AuthClient.create_auth_client()
-    token = await authorizer.authenticate(
-        entities.UserSignInSchema(
-            email=user.email,
-            password=factories.USER_PASSWORD,
-        ),
-    )
-    api_client = client_factory()
-    api_client.headers["authorization"] = f"Bearer {token}"
-    return api_client
+    return utils.user_api_client(user=user)

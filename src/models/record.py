@@ -37,10 +37,12 @@ class Record(BaseModel):
 
     created_by = sqlalchemy.orm.relationship(
         argument="User",
+        single_parent=True,
         foreign_keys=[created_by_id],
     )
     reserved_by = sqlalchemy.orm.relationship(
         argument="User",
+        single_parent=True,
         foreign_keys=[reserved_by_id],
     )
 
