@@ -24,12 +24,13 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
 
     async def get_list(
         self,
+        *args,
         **data: typing.Any,
     ) -> typing.Sequence[ModelClass]:
         """Return list of records from database."""
         async with settings.session_factory() as session:
             raw_result = await session.execute(
-                sqlalchemy.select(self.model).filter_by(**data),
+                sqlalchemy.select(self.model).where(*args).filter_by(**data),
             )
         return raw_result.scalars().all()
 

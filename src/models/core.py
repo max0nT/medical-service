@@ -1,6 +1,23 @@
+import enum
+
 import sqlalchemy
 
 from config import settings
+
+
+class OnDelete(enum.StrEnum):
+    """Describe values for `on_delete` options.
+
+    Unlike django or, sqlalchemy doesn't provide enum to describe
+    `on_delete` option values.
+    See also https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-FK
+
+
+    """
+
+    CASCADE = "CASCADE"
+    RESTRICT = "RESTRICT"
+    SET_NULL = "SET NULL"
 
 
 class BaseModel(settings.Base):

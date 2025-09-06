@@ -25,7 +25,7 @@ async def get_list(
     created_by: int | None = None,
     reserved_by: int | None = None,
 ) -> list[entities.RecordReadSchema]:
-    """Retrun list of `Record` instances."""
+    """Return list of `Record` instances."""
     filters = {}
     if created_by:
         filters["created_by_id"] = created_by
@@ -50,12 +50,11 @@ async def retrieve(
     ],
     pk: int,
 ) -> entities.RecordReadSchema:
-    """Retrun one `Record` instance by id."""
+    """Return one `Record` instance by id."""
     repository = await repositories.RecordRepository.create_repository()
     instance = await repository.retrieve_one(pk=pk)
     if not instance:
         raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
-
     return entities.RecordReadSchema.model_validate(instance)
 
 
@@ -71,10 +70,10 @@ async def create(
     permissions.user_is_employee(user=user)
     repository = await repositories.RecordRepository.create_repository()
     instance: Record = await repository.create_one(
-        crerated_by_id=user.id,
+        created_by_id=user.id,
         **data.model_dump(mode="json"),
     )
-    return entities.RecordReadSchema.model_validate(instance)
+    return entities.RecordReadSchema.model_dump(instance, mode="json")
 
 
 @router.put("{pk}/")

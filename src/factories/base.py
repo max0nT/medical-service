@@ -1,3 +1,5 @@
+from inspect import isawaitable
+
 import factory
 from sqlalchemy.ext import asyncio as asyncio_ext
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -28,6 +30,10 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
             f"{cls.__name__}.Meta.sessionmaker must be"
             f" {async_sessionmaker.__name__}, not {type(session_maker)}",
         )
+
+        for key, item in kwargs.items():
+            if isawaitable(item):
+                kwargs[key] = await item
         instance: decl_api.DeclarativeBase = model_class(*args, **kwargs)
         async with session_maker() as session:
             session.add(instance)

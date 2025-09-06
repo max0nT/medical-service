@@ -1,4 +1,5 @@
 import datetime
+import typing
 
 import pydantic
 
@@ -12,6 +13,13 @@ class RecordReadSchema(BaseReadModelSchema):
     reserved_by_id: int | None
     start: datetime.date
     end: datetime.date
+
+    @pydantic.field_validator("start", "end", mode="before")
+    @classmethod
+    def get_date(cls, value: typing.Any):
+        if not isinstance(value, datetime.datetime):
+            return value
+        return value.date()
 
 
 class RecordWriteSchema(pydantic.BaseModel):
