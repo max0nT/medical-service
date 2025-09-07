@@ -32,7 +32,7 @@ ns.configure(
                 pull_ff="only",
             ),
             docker=saritasa_invocations.DockerSettings(
-                main_containers=("postgres", "redis"),
+                main_containers=("postgres", "redis", "mailpit"),
             ),
             fastapi=saritasa_invocations.FastAPISettings(
                 app="src.app:app",

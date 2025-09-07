@@ -1,8 +1,17 @@
 argnames
+argvalues
+axllent
 drivername
+enitity
+joinedload
+lazyload
 lpos
 lpush
+mailpit
+ondelete
+onupdate
 poolclass
 saritasa
 sessionmaker
 setex
+viewonly

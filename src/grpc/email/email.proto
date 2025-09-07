@@ -1,0 +1,24 @@
+edition = "2023";
+
+package email;
+
+message Email {
+
+    string first_name = 1;
+    string last_name = 2;
+    string email = 3;
+
+    enum EmailType {
+        SIGN_UP_SUCCESSFULLY = 0;
+    }
+
+    EmailType type = 4;
+}
+
+message Response {
+    int32 status_code = 1;
+}
+
+service EmailSend {
+    rpc SendEmail(Email) returns (Response) {}
+}

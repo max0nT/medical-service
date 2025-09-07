@@ -70,6 +70,10 @@ pydantic-settings = "^2.10.1"
 # Redis python client
 # https://github.com/redis/redis-py
 redis = "^6.4.0"
+# Grpc tools for remote coll procedure
+# https://pypi.org/project/grpcio-tools/
+grpcio-tools = "^1.74.0"
+google = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
