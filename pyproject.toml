@@ -21,7 +21,7 @@ asyncpg = "^0.30.0"
 pydantic = "^2.11.3"
 # ASGI for backend
 # https://github.com/encode/uvicorn
-uvicorn = "0.34.1"
+uvicorn = "0.35.0"
 # Extension for password encryption
 # https://passlib.readthedocs.io/en/stable/
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
