@@ -1,23 +1,21 @@
-import http
-
-import fastapi
-
 from src import models
 
-
-def user_is_employee(user: models.User) -> None:
-    """Check if user isn't employee raise 403 error."""
-    if user.role != models.User.Role.employee:
-        raise fastapi.HTTPException(
-            status_code=http.HTTPStatus.FORBIDDEN,
-            detail={"detail": "User isn't empoyee to performa that action."},
-        )
+from .base import BasePermission
 
 
-def user_is_client(user: models.User) -> None:
-    """Check if user isn't client raise 403 error."""
-    if user.role != models.User.Role.client:
-        raise fastapi.HTTPException(
-            status_code=http.HTTPStatus.FORBIDDEN,
-            detail={"detail": "User isn't client to performa that action."},
-        )
+class UserEmployeePermission(BasePermission):
+    """Base Permission class to check user is employee."""
+
+    error_message = "Only employee can perform the action"
+
+    def has_permissions(self):
+        return self.user.role == models.User.Role.employee
+
+
+class UserClientPermission(BasePermission):
+    """Base Permission class to check user is client."""
+
+    error_message = "Only client can perform the action."
+
+    def has_permissions(self):
+        return self.user.role == models.User.Role.client

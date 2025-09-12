@@ -12,6 +12,7 @@ from src import (
     services,
 )
 from src.models.record import Record
+from src.permissions.record import UserEmployeePermission
 
 router = fastapi.APIRouter(prefix="/records", tags=["Records"])
 
@@ -59,6 +60,9 @@ async def retrieve(
 
 
 @router.post("/", status_code=http.HTTPStatus.CREATED)
+@permissions.permission_list(
+    permission_classes=(permissions.UserEmployeePermission,),
+)
 async def create(
     user: typing.Annotated[
         models.User,
@@ -67,7 +71,6 @@ async def create(
     data: entities.RecordWriteSchema,
 ) -> entities.RecordReadSchema:
     """Create `Record` instance."""
-    permissions.user_is_employee(user=user)
     repository = await repositories.RecordRepository.create_repository()
     instance: Record = await repository.create_one(
         created_by_id=user.id,
@@ -77,6 +80,7 @@ async def create(
 
 
 @router.put("/{pk}/")
+@permissions.permission_list(permission_classes=(UserEmployeePermission,))
 async def update(
     user: typing.Annotated[
         models.User,
@@ -86,7 +90,6 @@ async def update(
     data: entities.RecordWriteSchema,
 ) -> entities.RecordReadSchema:
     """Update `Record` instance."""
-    permissions.user_is_employee(user=user)
 
     repository = await repositories.RecordRepository.create_repository()
     instance = await repository.retrieve_one(pk=pk)
@@ -98,6 +101,9 @@ async def update(
 
 
 @router.put("/reserve/{pk}/")
+@permissions.permission_list(
+    permission_classes=(permissions.UserClientPermission,),
+)
 async def reserve(
     user: typing.Annotated[
         models.User,
@@ -105,7 +111,6 @@ async def reserve(
     ],
     pk: int,
 ) -> entities.RecordReadSchema:
-    permissions.user_is_client(user=user)
     repository = await repositories.RecordRepository.create_repository()
     instance = await repository.retrieve_one(pk=pk)
     if not instance:
@@ -119,6 +124,9 @@ async def reserve(
 
 
 @router.delete("/{pk}/")
+@permissions.permission_list(
+    permission_classes=(permissions.UserEmployeePermission,),
+)
 async def delete(
     user: typing.Annotated[
         models.User,
@@ -127,7 +135,6 @@ async def delete(
     pk: int,
 ) -> fastapi.Response:
     """Delete `Record` instance."""
-    permissions.user_is_employee(user=user)
     repository = await repositories.RecordRepository.create_repository()
     is_deleted = await repository.delete_one(pk=pk)
     if not is_deleted:

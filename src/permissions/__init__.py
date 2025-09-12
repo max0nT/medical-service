@@ -1,1 +1,5 @@
-from .record import user_is_client, user_is_employee
+from .base import permission_list
+from .record import (
+    UserClientPermission,
+    UserEmployeePermission,
+)

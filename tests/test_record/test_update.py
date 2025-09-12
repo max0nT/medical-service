@@ -37,5 +37,4 @@ async def test_update_by_not_employee(
         f"/records/{record.id}/",
         content=request_data.model_dump_json(),
     )
-
     assert response.status_code == httpx.codes.FORBIDDEN
