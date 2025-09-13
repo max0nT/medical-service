@@ -28,10 +28,12 @@ async def authorize(
     user = None
     if "authorization" in request.headers:
         auth_client = AuthClient.create_auth_client()
+
         token = await dependencies.oauth2_scheme(request=request)
         user_id = await auth_client.check_token_is_valid(
             token=token,
         )
+
         user_repo = await repositories.UserRepository.create_repository()
         user: models.User | None = await user_repo.retrieve_one(pk=user_id)
 

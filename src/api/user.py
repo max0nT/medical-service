@@ -103,9 +103,7 @@ async def retrieve(
 ) -> entities.UserReadSchema:
     """Return one `User` instance by id."""
     repository = await repositories.UserRepository.create_repository()
-    instance = await repository.retrieve_one(pk=pk)
-    if not instance:
-        raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
+    instance = await repository.retrieve_one(pk=pk, raise_error=True)
 
     return entities.UserReadSchema.model_validate(instance)
 
@@ -121,8 +119,6 @@ async def update(
 ) -> entities.UserReadSchema:
     """Update `Record` instance."""
     repository = await repositories.UserRepository.create_repository()
-    instance = await repository.retrieve_one(pk=pk)
-    if not instance:
-        raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
+    await repository.retrieve_one(pk=pk, raise_error=True)
     updated_instance = await repository.update_one(pk=pk, **data.model_dump())
     return entities.UserReadSchema.model_validate(updated_instance)

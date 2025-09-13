@@ -1,6 +1,9 @@
 import typing
 from abc import ABC
 
+import fastapi
+
+import httpx
 import sqlalchemy
 
 from config import settings
@@ -49,10 +52,18 @@ class BaseRepository(typing.Generic[ModelClass], ABC):
     async def retrieve_one(
         self,
         pk: int,
+        raise_error: bool = False,
     ) -> ModelClass | None:
         """Return one instance by pk."""
         async with settings.session_factory() as session:
             raw_result = await session.get(self.model, pk)
+
+        if not raw_result and raise_error:
+            raise fastapi.exceptions.HTTPException(
+                status_code=httpx.codes.NOT_FOUND,
+                detail=f"Instances with {pk=} not found.",
+            )
+
         return raw_result
 
     async def update_one(

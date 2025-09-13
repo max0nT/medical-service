@@ -50,9 +50,7 @@ async def retrieve(
 ) -> entities.RecordReadSchema:
     """Return one `Record` instance by id."""
     repository = await repositories.RecordRepository.create_repository()
-    instance = await repository.retrieve_one(pk=pk)
-    if not instance:
-        raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
+    instance = await repository.retrieve_one(pk=pk, raise_error=True)
     return entities.RecordReadSchema.model_validate(instance)
 
 
@@ -91,9 +89,7 @@ async def update(
     """Update `Record` instance."""
 
     repository = await repositories.RecordRepository.create_repository()
-    instance = await repository.retrieve_one(pk=pk)
-    if not instance:
-        raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
+    await repository.retrieve_one(pk=pk, raise_error=True)
 
     updated_instance = await repository.update_one(pk=pk, **data.model_dump())
     return entities.RecordReadSchema.model_validate(updated_instance)
@@ -111,14 +107,13 @@ async def reserve(
     pk: int,
 ) -> entities.RecordReadSchema:
     repository = await repositories.RecordRepository.create_repository()
-    instance = await repository.retrieve_one(pk=pk)
-    if not instance:
-        raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
+    instance = await repository.retrieve_one(pk=pk, raise_error=True)
 
     updated_instance = await services.reserve(
         user=request.user,
         record=instance,
     )
+
     return entities.RecordReadSchema.model_validate(updated_instance)
 
 
