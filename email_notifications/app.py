@@ -2,6 +2,7 @@ import concurrent.futures as futures
 import logging
 
 import grpc
+from email_config.sign_up import SignUpNotification
 from grpc_config import email_pb2 as email__pb2
 from grpc_config import email_pb2_grpc
 
@@ -12,7 +13,11 @@ class EmailNotification(email_pb2_grpc.EmailSendServicer):
     """Email notification class."""
 
     def SendEmail(self, request, context):
-        print("Stub to ensure grpc works")
+        SignUpNotification(
+            email=request.email,
+            first_name=request.first_name,
+            last_name=request.last_name,
+        ).send()
         return email__pb2.Response(status_code=204)
 
 
