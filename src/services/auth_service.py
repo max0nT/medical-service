@@ -29,28 +29,28 @@ class AuthClient:
         data: entities.UserSignUpSchema,
     ) -> tuple[str, models.User]:
         """Create user logic."""
-        repository = await repositories.UserRepository.create_repository()
-        check_exist = await repository.get_list(email=data.email)
+        repo = await repositories.UserRepository.create_repository()
+        check_exist = await repo.get_list(email=data.email)
+        validations_errors = []
         if check_exist:
-            raise fastapi.HTTPException(
-                status_code=http.HTTPStatus.BAD_REQUEST,
-                detail={
-                    "detail": f"User with email {data.email} already exists",
-                },
+            validations_errors.append(
+                f"User with email {data.email} already exists",
             )
         if (
             data.password
             and data.password_repeat
             and data.password != data.password_repeat
         ):
+            validations_errors.append("Passwords don't match")
+
+        if validations_errors:
             raise fastapi.HTTPException(
                 status_code=http.HTTPStatus.BAD_REQUEST,
-                detail={"detail": "Passwords don't match"},
+                detail={"detail": validations_errors[0]},
             )
-        hashed_password = self.hash_password(password=data.password)
-        user = await repository.create_one(
+        user = await repo.create_one(
             email=data.email,
-            password=hashed_password,
+            password=self.hash_password(data.password),
             role=models.User.Role.client.value,
         )
         token = self.setup_token(user=user)
@@ -58,29 +58,25 @@ class AuthClient:
 
     async def authenticate(self, data: entities.UserSignInSchema) -> str:
         """Implement user signing in if all correct return access token."""
-        repository = await repositories.UserRepository.create_repository()
-        exception = fastapi.HTTPException(
-            status_code=http.HTTPStatus.BAD_REQUEST,
-            detail={"detail": "Wrong email or password."},
+        repo = await repositories.UserRepository.create_repository()
+        user = await repo.get_list(
+            email=data.email,
         )
-        result_list = await repository.get_list(email=data.email)
-        if not result_list:
-            raise exception
-        user = result_list[0]
-        if not self.check_password(
-            password=data.password,
-            hashed_password=user.password,
+        if (
+            not user
+            or user
+            and not pwd_context.verify(data.password, user[0].password)
         ):
-            raise exception
-        return self.setup_token(user=user)
+            raise fastapi.HTTPException(
+                status_code=http.HTTPStatus.BAD_REQUEST,
+                detail={"detail": "Wrong email or password."},
+            )
+        return self.setup_token(user=user[0])
 
-    def hash_password(self, password: str) -> str:
+    @classmethod
+    def hash_password(cls, value: str) -> str:
         """Hash password."""
-        return pwd_context.hash(password)
-
-    def check_password(self, password: str, hashed_password: str) -> bool:
-        """Check password is right."""
-        return pwd_context.verify(password, hashed_password)
+        return pwd_context.hash(value)
 
     def setup_token(self, user: models.User) -> str:
         """Setup access token."""
@@ -106,7 +102,6 @@ class AuthClient:
 
     async def check_token_is_valid(self, token: str) -> int:
         """Check token is valid if yes return user id."""
-        errors: set = set()
         payload = dict()
         try:
             payload: dict = jwt.decode(
@@ -115,19 +110,12 @@ class AuthClient:
                 [settings.algorithm],
             )
         except jwt.exceptions.InvalidTokenError:
-            errors.add("Token is invalid")
+            return None
+
         async with RedisAPIClient() as client:
             is_banned = bool(await client.get_value(name=token))
-        if is_banned:
-            errors.add("Token is invalid")
-        if errors:
-            raise fastapi.HTTPException(
-                status_code=http.HTTPStatus.UNAUTHORIZED,
-                detail={
-                    "detail": errors.pop(),
-                },
-            )
-        return payload.get("id")
+
+        return payload.get("id") if not is_banned else None
 
     async def move_token_to_black_list(self, token: str) -> None:
         """Move JWT token to black list."""

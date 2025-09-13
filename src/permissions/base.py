@@ -5,7 +5,7 @@ import fastapi
 
 import httpx
 
-from src import models
+from src import extensions
 
 
 class BasePermission:
@@ -16,10 +16,15 @@ class BasePermission:
 
     def __init__(
         self,
-        user: models.User | None = None,
+        request: extensions.Request | None = None,
         **kwargs,
     ):
-        self.user = user
+        assert (  # noqa: F631
+            isinstance(request, extensions.Request),
+            f"Request objects must be {extensions.Request},"
+            f" not {request.__class__.__name__}",
+        )
+        self.request = request
         self.kwargs = kwargs
 
     def has_permissions(self) -> bool:

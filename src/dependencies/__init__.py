@@ -1,1 +1,1 @@
-from .auth import auth_user, oauth2_scheme
+from .auth import oauth2_scheme

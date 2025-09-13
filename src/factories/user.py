@@ -23,7 +23,7 @@ class UserFactory(BaseFactory):
     )
     password = factory.LazyAttribute(
         lambda _: (
-            services.AuthClient.create_auth_client().hash_password(
+            services.AuthClient.hash_password(
                 USER_PASSWORD,
             )
         ),

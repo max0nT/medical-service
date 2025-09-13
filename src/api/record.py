@@ -1,28 +1,25 @@
 import http
-import typing
 
 import fastapi
 
 from src import (
-    dependencies,
     entities,
-    models,
+    extensions,
     permissions,
     repositories,
     services,
 )
 from src.models.record import Record
-from src.permissions.record import UserEmployeePermission
 
 router = fastapi.APIRouter(prefix="/records", tags=["Records"])
 
 
 @router.get("/")
+@permissions.permission_list(
+    permission_classes=(permissions.IsAuthenticatedPermission,),
+)
 async def get_list(
-    user: typing.Annotated[
-        models.User,
-        fastapi.Depends(dependencies.auth_user),
-    ],
+    request: extensions.Request,
     created_by: int | None = None,
     reserved_by: int | None = None,
 ) -> list[entities.RecordReadSchema]:
@@ -44,11 +41,11 @@ async def get_list(
 
 
 @router.get("/{pk}/")
+@permissions.permission_list(
+    permission_classes=(permissions.IsAuthenticatedPermission,),
+)
 async def retrieve(
-    user: typing.Annotated[
-        models.User,
-        fastapi.Depends(dependencies.auth_user),
-    ],
+    request: extensions.Request,
     pk: int,
 ) -> entities.RecordReadSchema:
     """Return one `Record` instance by id."""
@@ -61,31 +58,33 @@ async def retrieve(
 
 @router.post("/", status_code=http.HTTPStatus.CREATED)
 @permissions.permission_list(
-    permission_classes=(permissions.UserEmployeePermission,),
+    permission_classes=(
+        permissions.IsAuthenticatedPermission,
+        permissions.UserEmployeePermission,
+    ),
 )
 async def create(
-    user: typing.Annotated[
-        models.User,
-        fastapi.Depends(dependencies.auth_user),
-    ],
+    request: extensions.Request,
     data: entities.RecordWriteSchema,
 ) -> entities.RecordReadSchema:
     """Create `Record` instance."""
     repository = await repositories.RecordRepository.create_repository()
     instance: Record = await repository.create_one(
-        created_by_id=user.id,
+        created_by_id=request.user.id,
         **data.model_dump(),
     )
     return entities.RecordReadSchema.model_validate(instance)
 
 
 @router.put("/{pk}/")
-@permissions.permission_list(permission_classes=(UserEmployeePermission,))
+@permissions.permission_list(
+    permission_classes=(
+        permissions.IsAuthenticatedPermission,
+        permissions.UserEmployeePermission,
+    ),
+)
 async def update(
-    user: typing.Annotated[
-        models.User,
-        fastapi.Depends(dependencies.auth_user),
-    ],
+    request: extensions.Request,
     pk: int,
     data: entities.RecordWriteSchema,
 ) -> entities.RecordReadSchema:
@@ -102,13 +101,13 @@ async def update(
 
 @router.put("/reserve/{pk}/")
 @permissions.permission_list(
-    permission_classes=(permissions.UserClientPermission,),
+    permission_classes=(
+        permissions.IsAuthenticatedPermission,
+        permissions.UserClientPermission,
+    ),
 )
 async def reserve(
-    user: typing.Annotated[
-        models.User,
-        fastapi.Depends(dependencies.auth_user),
-    ],
+    request: extensions.Request,
     pk: int,
 ) -> entities.RecordReadSchema:
     repository = await repositories.RecordRepository.create_repository()
@@ -117,7 +116,7 @@ async def reserve(
         raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
 
     updated_instance = await services.reserve(
-        user=user,
+        user=request.user,
         record=instance,
     )
     return entities.RecordReadSchema.model_validate(updated_instance)
@@ -125,13 +124,13 @@ async def reserve(
 
 @router.delete("/{pk}/")
 @permissions.permission_list(
-    permission_classes=(permissions.UserEmployeePermission,),
+    permission_classes=(
+        permissions.IsAuthenticatedPermission,
+        permissions.UserEmployeePermission,
+    ),
 )
 async def delete(
-    user: typing.Annotated[
-        models.User,
-        fastapi.Depends(dependencies.auth_user),
-    ],
+    request: extensions.Request,
     pk: int,
 ) -> fastapi.Response:
     """Delete `Record` instance."""

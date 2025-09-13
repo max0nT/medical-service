@@ -3,7 +3,14 @@ import typing
 
 import fastapi
 
-from src import dependencies, entities, models, repositories, services
+from src import (
+    dependencies,
+    entities,
+    extensions,
+    permissions,
+    repositories,
+    services,
+)
 
 router = fastapi.APIRouter(prefix="/users", tags=["Users"])
 
@@ -60,24 +67,24 @@ async def logout(
     path="/me/",
     response_model=entities.UserReadSchema,
 )
-async def me(
-    user: typing.Annotated[
-        models.User,
-        fastapi.Depends(dependencies.auth_user),
-    ],
-) -> entities.UserReadSchema:
+@permissions.permission_list(
+    permission_classes=(permissions.IsAuthenticatedPermission,),
+)
+async def me(request: extensions.Request) -> entities.UserReadSchema:
     """Get info about user by access token."""
-    return entities.UserReadSchema.model_validate(user).model_dump(mode="json")
+    return entities.UserReadSchema.model_validate(request.user).model_dump(
+        mode="json",
+    )
 
 
 @router.get("/")
+@permissions.permission_list(
+    permission_classes=(permissions.IsAuthenticatedPermission,),
+)
 async def get_list(
-    user: typing.Annotated[
-        models.User,
-        fastapi.Depends(dependencies.auth_user),
-    ],
+    request: extensions.Request,
 ) -> list[entities.UserReadSchema]:
-    """Retrun list of `User` instances."""
+    """Return list of `User` instances."""
     repository = await repositories.UserRepository.create_repository()
     result_list = await repository.get_list()
     return [
@@ -87,11 +94,11 @@ async def get_list(
 
 
 @router.get("/{pk}/")
+@permissions.permission_list(
+    permission_classes=(permissions.IsAuthenticatedPermission,),
+)
 async def retrieve(
-    user: typing.Annotated[
-        models.User,
-        fastapi.Depends(dependencies.auth_user),
-    ],
+    request: extensions.Request,
     pk: int,
 ) -> entities.UserReadSchema:
     """Return one `User` instance by id."""
@@ -104,11 +111,11 @@ async def retrieve(
 
 
 @router.put("/{pk}/")
+@permissions.permission_list(
+    permission_classes=(permissions.IsAuthenticatedPermission,),
+)
 async def update(
-    user: typing.Annotated[
-        models.User,
-        fastapi.Depends(dependencies.auth_user),
-    ],
+    request: extensions.Request,
     pk: int,
     data: entities.UserWriteSchema,
 ) -> entities.UserReadSchema:

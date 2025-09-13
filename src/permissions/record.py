@@ -9,7 +9,9 @@ class UserEmployeePermission(BasePermission):
     error_message = "Only employee can perform the action"
 
     def has_permissions(self):
-        return self.user.role == models.User.Role.employee
+        return (
+            getattr(self.request.user, "role", "") == models.User.Role.employee
+        )
 
 
 class UserClientPermission(BasePermission):
@@ -18,4 +20,6 @@ class UserClientPermission(BasePermission):
     error_message = "Only client can perform the action."
 
     def has_permissions(self):
-        return self.user.role == models.User.Role.client
+        return (
+            getattr(self.request.user, "role", "") == models.User.Role.client
+        )
