@@ -12,6 +12,7 @@ from config import settings
 
 from src import entities, models, repositories
 from src.redis.client import RedisAPIClient
+from src.tasks import send_email
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -53,6 +54,7 @@ class AuthClient:
             password=self.hash_password(data.password),
             role=models.User.Role.client.value,
         )
+        send_email()
         token = self.setup_token(user=user)
         return token, user
 

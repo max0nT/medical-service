@@ -35,6 +35,15 @@ To run test via pytest use next command:
 inv pytest.run
 ```
 
+## Locally installation: email microservice
+
+You should follow installation guide for backend app before email microservice app
+
+If you've done it, just run
+```
+python email_notification/app.py
+```
+
 ## Stack
 
 FE: react native
