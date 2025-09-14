@@ -2,6 +2,10 @@ import smtplib
 from abc import abstractmethod
 from email.message import EmailMessage
 
+from grpc_config import email_pb2 as email__pb2
+
+NOTIFICATIONS = {}
+
 
 class BaseEmailNotification:
     """Base Notification class for email sending."""
@@ -11,6 +15,19 @@ class BaseEmailNotification:
 
     def __init__(self, email: str) -> None:
         self.email_to = email
+
+    def __init_subclass__(
+        cls,
+        notification_type: email__pb2.Email.EmailType,
+    ):
+        """Add subclass to `NOTIFICATIONS` list."""
+        assert (  # noqa: F631
+            notification_type not in NOTIFICATIONS,
+            f"{notification_type} is already presented in notification types.",
+        )
+
+        NOTIFICATIONS[notification_type] = cls
+        return super().__init_subclass__()
 
     @property
     @abstractmethod

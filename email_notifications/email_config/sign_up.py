@@ -1,11 +1,15 @@
 import pathlib
 
+from grpc_config import email_pb2 as email__pb2
 from jinja2 import Template
 
 from .base import BaseEmailNotification
 
 
-class SignUpNotification(BaseEmailNotification):
+class SignUpNotification(
+    BaseEmailNotification,
+    notification_type=email__pb2.Email.EmailType.SIGN_UP_SUCCESSFULLY,
+):
     """Notification for sign up message."""
 
     subject = "You've signed up to our app"
