@@ -40,9 +40,50 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
+  minio:
+    image: minio/minio:latest
+    command: server --address 0.0.0.0:9001 --console-address 0.0.0.0:9000 /data
+    environment:
+      - MINIO_ROOT_USER=root
+      - MINIO_ROOT_PASSWORD=rootroot
+      # Set `MINIO_DOMAIN` to enable virtual-hosted-style for minio.
+      # https://min.io/docs/minio/linux/administration/object-management.html#id1
+      - MINIO_DOMAIN=s3.minio.localhost
+    ports:
+      - "9001:9001"
+      - "9000:9000"
+    volumes:
+      - minio_data:/data
+    networks:
+      default:
+        aliases:
+          # Set alias that suitable for virtual-hosted-style URL structure:
+          # `https://<bucket>.s3.<region>.amazonaws.com/<key>
+          # We need apply this style for local S3 storage because path-style
+          # URLs will be discontinued in the future, and we want to make
+          # consistent URLs for uploading and downloading files.
+          # https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html
+          - ${COMPOSE_PROJECT_NAME}-files.s3.minio.localhost
+    healthcheck:
+      test: curl -f http://127.0.0.1:9001/minio/health/live
+      interval: 0.1s
+      timeout: 3s
+      retries: 30
 
-
+  minio-create-bucket:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set s3minio http://minio:9001 root rootroot;
+      /usr/bin/mc mb s3minio/${COMPOSE_PROJECT_NAME}-files;
+      /usr/bin/mc anonymous set private s3minio/${COMPOSE_PROJECT_NAME}-files;
+      exit 0;
+      "
 
 volumes:
   postgres_data:
   mailpit-box:
+  minio_data:

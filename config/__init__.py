@@ -8,12 +8,14 @@ from sqlalchemy.orm import declarative_base
 from .auth import AuthSettings
 from .database import PostgresSettings
 from .redis import RedisSettings
+from .s3 import S3Config
 
 
 class Settings(
     AuthSettings,
     PostgresSettings,
     RedisSettings,
+    S3Config,
 ):
     """Settings class for app."""
 

@@ -75,6 +75,9 @@ redis = "^6.4.0"
 grpcio-tools = "^1.74.0"
 google = "^3.0.0"
 jinja2 = "^3.1.6"
+# SDK for s3 storage
+# https://github.com/boto/boto3
+boto3 = "^1.40.40"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
