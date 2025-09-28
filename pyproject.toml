@@ -6,7 +6,7 @@ python = "^3.12"
 
 # Framework to make backend apps
 # https://pypi.org/project/fastapi/
-fastapi = "^0.116.0"
+fastapi = "^0.117.0"
 # Manager for db migrations based on sqlalchemy
 # https://github.com/sqlalchemy/alembic
 alembic = "1.13.2"
