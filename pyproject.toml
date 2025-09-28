@@ -36,7 +36,7 @@ pyjwt = "^2.10.1"
 arrow = "^1.3.0"
 # The best linter written on rust
 # https://docs.astral.sh/ruff/
-ruff = "^0.11.7"
+ruff = "^0.13.0"
 # To handle git hooks in python-level
 # https://github.com/pre-commit/pre-commit
 pre-commit = "^4.3.0"
