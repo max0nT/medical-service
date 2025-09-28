@@ -1,5 +1,4 @@
 {
-  ignorePaths: ["**/ui/**"],
   extends: [
       // https://docs.renovatebot.com/presets-default/#dependencydashboard
       ":dependencyDashboard",
@@ -111,10 +110,10 @@
       {
         groupName: "Ignored",
         "matchPackageNames": [
-          // https://saritasa.atlassian.net/browse/SA3P-128
-          "pycqa/docformatter"
+          "pycqa/docformatter",
+          "ui/*"
         ],
-        "enabled": false
+       "enabled": false
       }
     ]
 }
