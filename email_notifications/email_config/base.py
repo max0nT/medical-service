@@ -22,9 +22,8 @@ class BaseEmailNotification:
     ):
         """Add subclass to `NOTIFICATIONS` list."""
         assert (  # noqa: F631
-            notification_type not in NOTIFICATIONS,
-            f"{notification_type} is already presented in notification types.",
-        )
+            notification_type not in NOTIFICATIONS
+        ), f"{notification_type} is already presented in notification types."
 
         NOTIFICATIONS[notification_type] = cls
         return super().__init_subclass__()

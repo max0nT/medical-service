@@ -6,18 +6,20 @@ A mobile app to provide functions such as:
 
 - Make record to a doctor's session
 
-## Locally installation: backend app
+## Local installation: backend app
 
 In order setup and run backend app you need to have next tools on your machine:
 
-- uv
-- poetry
-- docker/docker-compose
+- [uv](https://github.com/astral-sh/uv)
+- [poetry](https://github.com/python-poetry/poetry)
+- [docker](https://www.docker.com/)
+- [docker-compose](https://docs.docker.com/compose/)
+- [just](https://github.com/casey/just)
 
 Then install virtual environment
 
 ```bash
-uv venv --python 3.12 && source .venv/bin/activate && poetry install
+just setup-deps
 ```
 
 Then create `.env` file in config directory and move in content to there from `.env.template` file
@@ -40,8 +42,8 @@ inv pytest.run
 You should follow installation guide for backend app before email microservice app
 
 If you've done it, just run
-```
-python email_notification/app.py
+```bash
+just email-run
 ```
 
 ## Stack
