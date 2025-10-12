@@ -24,7 +24,8 @@ pydantic = "^2.11.3"
 uvicorn = "0.34.1"
 # Extension for password encryption
 # https://passlib.readthedocs.io/en/stable/
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+passlib = {extras = ["bcrypt"], version = "1.7.4"}
+bcrypt = "4.3.0"
 # Tool to manage environment variables
 # https://pypi.org/project/python-decouple/
 python-decouple = "^3.8"
@@ -86,6 +87,9 @@ fastapi-storages = "^0.3.0"
 # To support load large data to api
 # https://pypi.org/project/python-multipart/
 python-multipart = "^0.0.20"
+# SqlAdmin for fastapi
+# https://github.com/aminalaee/sqladmin
+sqladmin = "^0.21.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

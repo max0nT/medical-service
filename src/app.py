@@ -4,7 +4,11 @@ import fastapi
 import fastapi.middleware
 import fastapi.middleware.cors
 
-from src import api, dependencies, extensions, models, repositories
+import sqladmin
+
+from config import settings
+
+from src import admin, api, dependencies, extensions, models, repositories
 from src.services.auth_service import AuthClient
 
 app = fastapi.FastAPI(redirect_slashes=False)
@@ -17,6 +21,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+Admin = sqladmin.Admin(app=app, engine=settings.engine)
+
+Admin.add_view(admin.UserAdmin)
 
 
 @app.middleware("http")

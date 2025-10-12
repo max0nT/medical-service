@@ -115,8 +115,10 @@ async def retrieve(
 async def update(
     request: extensions.Request,
     pk: int,
-    data: entities.UserWriteSchema,
     avatar: fastapi.UploadFile,
+    data: entities.UserWriteSchema = fastapi.Depends(
+        extensions.Checker(entities.UserWriteSchema),
+    ),
 ) -> entities.UserReadSchema:
     """Update `Record` instance."""
     repository = await repositories.UserRepository.create_repository()

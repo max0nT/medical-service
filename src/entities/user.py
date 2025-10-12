@@ -17,7 +17,6 @@ class UserReadSchema(BaseReadModelSchema):
 class UserWriteSchema(BaseModelSchema):
     """Model to editing `User` instances"""
 
-    email: str
     first_name: str | None
     last_name: str | None
     sync_with_google_calendar: bool
