@@ -74,6 +74,8 @@ redis = "^6.4.0"
 # https://pypi.org/project/grpcio-tools/
 grpcio-tools = "^1.74.0"
 google = "^3.0.0"
+# Engine to render html template
+# https://jinja.palletsprojects.com/en/stable/
 jinja2 = "^3.1.6"
 # SDK for s3 storage
 # https://github.com/boto/boto3
