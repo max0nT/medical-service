@@ -45,7 +45,7 @@
     "react-native-screens": "~4.10.0",
     "react-native-svg-transformer": "^1.5.1",
     "react-native-web": "~0.20.0",
-    "react-native-webview": "13.13.5",
+    "react-native-webview": "13.16.0",
     "react-native-yamap": "^4.8.3",
     "react-native-yamaps": "^1.1.1"
   },
