@@ -80,6 +80,12 @@ jinja2 = "^3.1.6"
 # SDK for s3 storage
 # https://github.com/boto/boto3
 boto3 = "^1.40.40"
+# To support file storage in fastapi
+# https://github.com/aminalaee/fastapi-storages
+fastapi-storages = "^0.3.0"
+# To support load large data to api
+# https://pypi.org/project/python-multipart/
+python-multipart = "^0.0.20"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

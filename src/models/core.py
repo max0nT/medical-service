@@ -3,8 +3,22 @@ import typing
 
 import sqlalchemy
 import sqlalchemy.orm as orm
+from fastapi_storages import S3Storage
 
 from config import settings
+
+
+def get_s3_backend() -> S3Storage:
+    """Get S3 backend for models."""
+    S3Storage.AWS_ACCESS_KEY_ID = settings.aws_access_key_id
+    S3Storage.AWS_SECRET_ACCESS_KEY = settings.aws_access_secret_key
+    S3Storage.AWS_S3_USE_SSL = settings.use_ssl
+    S3Storage.AWS_S3_ENDPOINT_URL = settings.endpoint_url
+    S3Storage.AWS_S3_BUCKET_NAME = settings.bucket_name
+    return S3Storage()
+
+
+s3_backend = get_s3_backend()
 
 
 class OnDelete(enum.StrEnum):

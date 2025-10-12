@@ -7,3 +7,5 @@ class S3Config(pydantic_settings.BaseSettings):
     endpoint_url: str
     aws_access_key_id: str
     aws_access_secret_key: str
+    use_ssl: bool
+    bucket_name: str

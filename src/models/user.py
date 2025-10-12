@@ -3,8 +3,9 @@ import enum
 import sqlalchemy
 import sqlalchemy.dialects
 import sqlalchemy.dialects.postgresql
+from fastapi_storages.integrations.sqlalchemy import FileType
 
-from .core import BaseModel
+from .core import BaseModel, s3_backend
 
 
 class User(BaseModel):
@@ -53,4 +54,9 @@ class User(BaseModel):
             name="role",
         ),
         default="client",
+    )
+
+    avatar = sqlalchemy.Column(
+        name="avatar",
+        type_=FileType(storage=s3_backend),
     )

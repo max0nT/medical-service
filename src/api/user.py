@@ -116,9 +116,14 @@ async def update(
     request: extensions.Request,
     pk: int,
     data: entities.UserWriteSchema,
+    avatar: fastapi.UploadFile,
 ) -> entities.UserReadSchema:
     """Update `Record` instance."""
     repository = await repositories.UserRepository.create_repository()
     await repository.retrieve_one(pk=pk, raise_error=True)
-    updated_instance = await repository.update_one(pk=pk, **data.model_dump())
+    updated_instance = await repository.update_one(
+        pk=pk,
+        **data.model_dump(),
+        avatar=avatar,
+    )
     return entities.UserReadSchema.model_validate(updated_instance)
