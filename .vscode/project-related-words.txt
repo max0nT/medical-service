@@ -4,6 +4,7 @@ axllent
 drivername
 enitity
 joinedload
+jsonable
 lazyload
 lpos
 lpush
@@ -14,4 +15,5 @@ poolclass
 saritasa
 sessionmaker
 setex
+sqladmin
 viewonly
