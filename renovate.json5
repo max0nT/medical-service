@@ -111,7 +111,7 @@
         groupName: "Ignored",
         "matchPackageNames": [
           "pycqa/docformatter",
-          "ui/*"
+          "ui/**"
         ],
        "enabled": false
       }
