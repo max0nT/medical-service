@@ -24,5 +24,6 @@ class Message(BaseModel):
 
     chat = sqlalchemy.orm.relationship(
         argument="Chat",
-        back_populates="chat",
+        foreign_keys=[chat_id],
+        single_parent=True,
     )

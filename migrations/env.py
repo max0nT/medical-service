@@ -8,7 +8,13 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from config import settings
 
-from src.models import Record, User  # noqa: F401
+from src.models import (  # noqa: F401
+    Chat,
+    Message,
+    Record,
+    SecondaryChatUser,
+    User,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

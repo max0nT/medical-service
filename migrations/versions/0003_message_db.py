@@ -1,8 +1,8 @@
-"""Add message db
+"""Message db
 
 Revision ID: 0003
 Revises: 0002
-Create Date: 2025-10-26 17:19:58.610667
+Create Date: 2026-01-05 14:02:23.089733
 
 """
 

@@ -23,10 +23,12 @@ class SecondaryChatUser(BaseModel):
     user = sqlalchemy.orm.relationship(
         argument="User",
         foreign_keys=[user_id],
+        single_parent=True,
     )
     chat = sqlalchemy.orm.relationship(
         argument="Chat",
         foreign_keys=[chat_id],
+        single_parent=True,
     )
 
     __table_args__ = (
@@ -49,6 +51,5 @@ class Chat(BaseModel):
     )
 
     users = sqlalchemy.orm.relationship(
-        argument="User",
-        secondary=SecondaryChatUser,
+        argument="SecondaryChatUser",
     )

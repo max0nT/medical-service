@@ -12,7 +12,7 @@ async def test_sign_up(
     client: httpx.AsyncClient,
 ):
     """Test sign up works successfully."""
-
+    ()
     request_data = entities.UserSignUpSchema(
         email=str(uuid.uuid4()) + "@gmail.com",
         password="new_password",
@@ -22,7 +22,6 @@ async def test_sign_up(
         url="/users/sign-up/",
         content=request_data.model_dump_json(),
     )
-
     assert response.is_success
     assert response.status_code == httpx.codes.CREATED
 

@@ -87,6 +87,7 @@ async def get_list(
     """Return list of `User` instances."""
     repository = await repositories.UserRepository.create_repository()
     result_list = await repository.get_list()
+    ()
     return [
         entities.UserReadSchema.model_validate(record)
         for record in result_list
@@ -113,12 +114,10 @@ async def retrieve(
     permission_classes=(permissions.IsAuthenticatedPermission,),
 )
 async def update(
-    request: extensions.Request,
+    request: fastapi.Request,
     pk: int,
-    avatar: fastapi.UploadFile,
-    data: entities.UserWriteSchema = fastapi.Depends(
-        extensions.Checker(entities.UserWriteSchema),
-    ),
+    data: typing.Annotated[entities.UserWriteSchema, fastapi.Form()],
+    # avatar: fastapi.UploadFile | None = None,
 ) -> entities.UserReadSchema:
     """Update `Record` instance."""
     repository = await repositories.UserRepository.create_repository()
@@ -126,6 +125,6 @@ async def update(
     updated_instance = await repository.update_one(
         pk=pk,
         **data.model_dump(),
-        avatar=avatar,
+        # avatar=avatar,
     )
     return entities.UserReadSchema.model_validate(updated_instance)

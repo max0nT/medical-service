@@ -32,13 +32,11 @@ async def test_api(
     request_data.first_name = new_name
     response: httpx.Response = await api_client.put(
         f"/users/{user.id}/",
-        content=request_data.model_dump_json(),
+        data=request_data.model_dump(),
     )
-
     assert response.status_code == expected_status_code
 
     if not response.is_success:
         return
-
     await user.refresh_from_db()
     assert user.first_name == new_name

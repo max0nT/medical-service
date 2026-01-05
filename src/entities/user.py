@@ -11,7 +11,7 @@ class UserReadSchema(BaseReadModelSchema):
     last_name: str | None
     sync_with_google_calendar: bool
     role: User.Role
-    avatar: str
+    avatar: str | None
 
 
 class UserWriteSchema(BaseModelSchema):
