@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import declarative_base
 
+from config.rabbitmq import RabbitMqSettings
+
 from .auth import AuthSettings
 from .database import PostgresSettings
 from .redis import RedisSettings
@@ -14,6 +16,7 @@ from .s3 import S3Config
 class Settings(
     AuthSettings,
     PostgresSettings,
+    RabbitMqSettings,
     RedisSettings,
     S3Config,
 ):

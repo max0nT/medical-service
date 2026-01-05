@@ -90,6 +90,8 @@ python-multipart = "^0.0.20"
 # SqlAdmin for fastapi
 # https://github.com/aminalaee/sqladmin
 sqladmin = "^0.21.0"
+pika = "^1.3.2"
+aio-pika = "^9.5.8"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

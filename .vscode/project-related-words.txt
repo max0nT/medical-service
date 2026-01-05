@@ -12,6 +12,7 @@ mailpit
 ondelete
 onupdate
 poolclass
+rabbitmq
 saritasa
 sessionmaker
 setex

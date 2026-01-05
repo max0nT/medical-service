@@ -11,6 +11,7 @@ from passlib.context import CryptContext
 from config import settings
 
 from src import entities, models, repositories
+from src.rabbitmq import rabbitmq_client
 from src.redis.client import RedisAPIClient
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -54,6 +55,12 @@ class AuthClient:
             role=models.User.Role.client.value,
         )
         token = self.setup_token(user=user)
+        await rabbitmq_client.send_message(
+            msg=(
+                entities.UserReadSchema.model_validate(user).model_dump_json()
+            ),
+            queue="email_notifications",
+        )
         return token, user
 
     async def authenticate(self, data: entities.UserSignInSchema) -> str:

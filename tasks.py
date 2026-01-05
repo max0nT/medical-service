@@ -37,6 +37,7 @@ ns.configure(
                     "redis",
                     "mailpit",
                     "minio",
+                    "rabbitmq",
                     "minio-create-bucket",
                 ),
             ),
