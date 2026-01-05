@@ -53,12 +53,6 @@ class AuthClient:
             password=self.hash_password(data.password),
             role=models.User.Role.client.value,
         )
-        # Remove after migrate from grpc to message queue
-        # send_sign_up_email(
-        #     email=user.email,
-        #     first_name=user.first_name,
-        #     last_name=user.last_name,
-        # )
         token = self.setup_token(user=user)
         return token, user
 
