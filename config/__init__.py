@@ -24,6 +24,7 @@ class Settings(
 
     model_config = pydantic_settings.SettingsConfigDict(
         env_file="config/.env",
+        extra="ignore",
     )
 
 
