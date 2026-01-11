@@ -15,3 +15,14 @@ export interface UserWrite {
     last_name?: string
     sync_with_google_calendar?: boolean
 }
+
+export interface UserLogin {
+    email: string
+    password: string
+}
+
+export interface UserSignUp {
+    email: string
+    password: string
+    password_repeat: string
+}
