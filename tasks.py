@@ -1,6 +1,8 @@
 import invoke
 import saritasa_invocations
 
+import invocations.android
+
 ns = invoke.Collection(
     saritasa_invocations.docker,
     saritasa_invocations.git,
@@ -10,6 +12,7 @@ ns = invoke.Collection(
     saritasa_invocations.fastapi,
     saritasa_invocations.pytest,
     saritasa_invocations.alembic,
+    invocations.android,
 )
 
 # Configurations for run command

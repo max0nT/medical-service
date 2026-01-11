@@ -4,6 +4,5 @@
 */node_modules
 __pycache__/
 .env
-expo-env.d.ts
 .pytest_cache
 .ruff_cache
