@@ -1,4 +1,4 @@
-import {api_client, client_error_status_code, client_error} from "./core"
+import {api_client, client_error_status_code, client_error} from "../core"
 import { UserWrite } from "./schemes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
