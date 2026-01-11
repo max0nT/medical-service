@@ -13,7 +13,7 @@ import (
 
 func Run(cfg *config.Config) {
 	smtpServer := smtp_serv.NewSMTP(
-		"0.0.0.0:" + cfg.Port,
+		"0.0.0.0:" + cfg.SmtpPort,
 	)
 	controllers := controllers.NewControllers(smtpServer)
 
