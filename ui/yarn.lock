@@ -4390,10 +4390,10 @@ expo-system-ui@~5.0.7:
     "@react-native/normalize-colors" "0.79.2"
     debug "^4.3.2"
 
-expo-web-browser@~14.1.6:
-  version "14.1.6"
-  resolved "https://registry.yarnpkg.com/expo-web-browser/-/expo-web-browser-14.1.6.tgz#26d66e641e6e96d155be6fa513e7e667a719a0b0"
-  integrity sha512-/4P8eWqRyfXIMZna3acg320LXNA+P2cwyEVbjDX8vHnWU+UnOtyRKWy3XaAIyMPQ9hVjBNUQTh4MPvtnPRzakw==
+expo-web-browser@~15.0.0:
+  version "15.0.10"
+  resolved "https://registry.yarnpkg.com/expo-web-browser/-/expo-web-browser-15.0.10.tgz#ee7fb59b4f143f262c13c020433a83444181f1a3"
+  integrity sha512-fvDhW4bhmXAeWFNFiInmsGCK83PAqAcQaFyp/3pE/jbdKmFKoRCWr46uZGIfN4msLK/OODhaQ/+US7GSJNDHJg==
 
 expo@~53.0.9:
   version "53.0.9"
