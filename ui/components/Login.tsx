@@ -9,6 +9,8 @@ import {
   Dimensions,
 } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { UserLogin } from '../api/user/schemes';
 import { ErrorModal } from './ErrorModal';
 import { loginRequest } from '../api/user/auth';
@@ -26,6 +28,10 @@ export function LoginScreen({ navigation }){
     let [statusCode, requestBody] = await loginRequest(login)
     if (statusCode >= 400) {
         setErrorMessage(requestBody.detail.detail)
+    } else {
+      console.log(requestBody)
+      await AsyncStorage.setItem("access_token", requestBody.access_token)
+      navigation.navigate("Profile")
     }
   };
   const handleRegister = () => {navigation.navigate("SignUp")};

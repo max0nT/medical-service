@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosInstance, Axios } from "axios"
 
 const HOSTNAME = "http://10.0.2.2:8000"
@@ -54,4 +55,18 @@ export async function MakeRequest(
         }
     )
     return [status, content] as [number, object]
+}
+
+
+export async function GetJwtToken(): Promise<string> {
+    let jwtToken: string = ""
+    await AsyncStorage.getItem("access_token")
+    .then((value: string | null) => {
+        if (value != null) {
+            jwtToken = value
+        }
+    }).catch( e => {
+        console.log("Error during get jwt token: " + e)
+    })
+    return jwtToken
 }
