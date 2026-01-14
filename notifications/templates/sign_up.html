@@ -1,0 +1,45 @@
+From: Medical Service <medical.service@gmail.com>
+To: {{.Email}}
+Subject: Registration Successful
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+<!DOCTYPE html>
+<html>
+<body>
+    <table width="600" cellpadding="20" cellspacing="0">
+        <tr>
+            <td>
+                <h2>Medical Service</h2>
+                <h3 style="color: #008000;">Registration Successful!</h3>
+
+                <p>Hello!</p>
+
+                <p>You have successfully registered with <strong>Medical Service</strong>.</p>
+
+                <p>Your registration email:</p>
+                <div style="background-color: #f0f8f0; padding: 10px; border-left: 4px solid #008000; margin: 15px 0;">
+                    <strong>{{.Email}}</strong>
+                </div>
+
+                <p>You can now:</p>
+                <ul>
+                    <li>Log in to your account</li>
+                    <li>Book appointments with doctors</li>
+                    <li>Access your medical records</li>
+                    <li>Receive medical consultation</li>
+                </ul>
+
+                <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+
+                <p>Best regards,<br>
+                <strong>The Medical Service Team</strong></p>
+
+                <p style="color: #666; font-size: 12px;">
+                    This is an automated message. Please do not reply to this email.<br>
+                    If you did not register for Medical Service, please ignore this email.
+                </p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

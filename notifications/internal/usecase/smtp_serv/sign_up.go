@@ -1,39 +1,52 @@
 package smtp_serv
 
 import (
-	"encoding/json"
-	"fmt"
+	"bytes"
+	"html/template"
 	"net/smtp"
 	"notifications/notifications/internal/entities"
 )
 
-func (s *SMTP) SendSignUpMail(body []byte) error {
-	var data entities.SignUp
-	err := json.Unmarshal(body, &data)
+func (s *SMTP) SendSignUpMail(data map[string]any) error {
+	serializedData := entities.SignUp{Email: data["email"].(string)}
+
+	htmlTmpl, err := template.ParseFiles(
+		"notifications/templates/sign_up.html",
+	)
 	if err != nil {
 		return err
 	}
-	message := fmt.Sprintf(
-		"From: Medical Service <medical.service@gmail.com>\r\n"+
-			"To: %s\r\n"+
-			"Subject: Успешная регистрация\r\n"+
-			"MIME-Version: 1.0\r\n"+
-			"Content-Type: text/plain; charset=\"UTF-8\"\r\n"+
-			"\r\n"+
-			"Здравствуйте, %s!\r\n"+
-			"Вы успешно зарегистрировались в MedicalService.\r\n"+
-			"Ваш email: %s\r\n"+
-			"\r\n"+
-			"С уважением,\r\n"+
-			"Команда MedicalService",
-		data.Email, data.Email, data.Email,
+
+	var htmlBuf bytes.Buffer
+	err = htmlTmpl.Execute(&htmlBuf, serializedData)
+	if err != nil {
+		return err
+	}
+
+	wrapperData := map[string]string{
+		"Email": serializedData.Email,
+		"Body":  htmlBuf.String(),
+	}
+
+	textTmpl, err := template.ParseFiles(
+		"notifications/templates/core.tmpl",
 	)
+	if err != nil {
+		return err
+	}
+
+	var emailBuf bytes.Buffer
+	err = textTmpl.Execute(&emailBuf, wrapperData)
+	if err != nil {
+		return err
+	}
+
 	err = smtp.SendMail(
 		s.URL,
 		nil,
 		"medical.service@gmail.com",
-		[]string{data.Email},
-		[]byte(message),
+		[]string{serializedData.Email},
+		emailBuf.Bytes(),
 	)
 	return err
 }

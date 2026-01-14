@@ -1,3 +1,4 @@
+from .email_notifications import EmailSignUp
 from .record import RecordReadSchema, RecordWriteSchema
 from .token import AuthToken
 from .user import (

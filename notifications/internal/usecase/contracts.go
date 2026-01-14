@@ -1,5 +1,5 @@
 package usecase
 
 type SMTPServer interface {
-	SendSignUpMail([]byte) error
+	SendSignUpMail(map[string]any) error
 }

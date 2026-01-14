@@ -1,4 +1,5 @@
 import datetime
+import enum
 
 import pydantic
 
@@ -9,6 +10,17 @@ class BaseModelSchema(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(
         from_attributes=True,
     )
+
+
+class EmailType(enum.StrEnum):
+    SIGN_UP = "SIGN_UP"
+    RECORD_IS_RESERVED = "RECORD_IS_RESERVED"
+
+
+class BaseEmailNotification(BaseModelSchema):
+    """Base class to describe data for email notifications."""
+
+    email_type: EmailType
 
 
 class BaseReadModelSchema(BaseModelSchema):

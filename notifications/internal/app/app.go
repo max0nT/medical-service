@@ -43,7 +43,7 @@ func Run(cfg *config.Config) {
 		)
 		return
 	}
-	err = consumer.Run(controllers.SignUp)
+	err = consumer.Run(controllers.SendEmail)
 	if err != nil {
 		return
 	}
