@@ -9,7 +9,7 @@ python = "^3.12"
 fastapi = "^0.128.0"
 # Manager for db migrations based on sqlalchemy
 # https://github.com/sqlalchemy/alembic
-alembic = "1.18.0"
+alembic = "1.18.1"
 # Async orm for python
 # https://www.sqlalchemy.org/
 sqlalchemy = "^2.0.40"
