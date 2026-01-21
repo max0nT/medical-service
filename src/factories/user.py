@@ -23,7 +23,7 @@ class UserFactory(BaseFactory):
     )
     password = factory.LazyAttribute(
         lambda _: (
-            services.AuthClient.hash_password(
+            services.ARGO2PasswordHasher().hash(
                 USER_PASSWORD,
             )
         ),

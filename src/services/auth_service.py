@@ -1,29 +1,23 @@
 import datetime
 import http
-import typing
 
 import fastapi
 
 import arrow
 import jwt
-from passlib.context import CryptContext
 
 from config import settings
 
-from src import entities, models, repositories
+from src import entities, models, protocols, repositories
 from src.rabbitmq import rabbitmq_client
 from src.redis.client import RedisAPIClient
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class AuthClient:
     """Provide base logic with signing in/up and authentication."""
 
-    @classmethod
-    def create_auth_client(cls) -> typing.Self:
-        """Init Auth client instance."""
-        return cls()
+    def __init__(self, password_hasher: protocols.PasswordHasher) -> None:
+        self.password_hasher = password_hasher
 
     async def sign_up(
         self,
@@ -51,7 +45,7 @@ class AuthClient:
             )
         user = await repo.create_one(
             email=data.email,
-            password=self.hash_password(data.password),
+            password=self.password_hasher.hash(data.password),
             role=models.User.Role.client.value,
         )
         token = self.setup_token(user=user)
@@ -70,18 +64,16 @@ class AuthClient:
         if (
             not user
             or user
-            and not pwd_context.verify(data.password, user[0].password)
+            and not self.password_hasher.verify(
+                user[0].password,
+                data.password,
+            )
         ):
             raise fastapi.HTTPException(
                 status_code=http.HTTPStatus.BAD_REQUEST,
                 detail={"detail": "Wrong email or password."},
             )
         return self.setup_token(user=user[0])
-
-    @classmethod
-    def hash_password(cls, value: str) -> str:
-        """Hash password."""
-        return pwd_context.hash(value)
 
     def setup_token(self, user: models.User) -> str:
         """Setup access token."""

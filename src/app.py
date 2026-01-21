@@ -9,7 +9,6 @@ import sqladmin
 from config import settings
 
 from src import admin, api, dependencies, extensions, models, repositories
-from src.services.auth_service import AuthClient
 
 app = fastapi.FastAPI(redirect_slashes=False)
 app.include_router(api.record_api_router)
@@ -35,7 +34,7 @@ async def authorize(
     """Authenticate user vie bearer token."""
     user = None
     if "authorization" in request.headers:
-        auth_client = AuthClient.create_auth_client()
+        auth_client = dependencies.get_auth_client()
 
         token = await dependencies.oauth2_scheme(request=request)
         user_id = await auth_client.check_token_is_valid(

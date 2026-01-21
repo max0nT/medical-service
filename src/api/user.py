@@ -8,8 +8,8 @@ from src import (
     entities,
     extensions,
     permissions,
+    protocols,
     repositories,
-    services,
 )
 
 router = fastapi.APIRouter(prefix="/users", tags=["Users"])
@@ -22,11 +22,13 @@ router = fastapi.APIRouter(prefix="/users", tags=["Users"])
 )
 async def sign_up(
     data: entities.UserSignUpSchema,
+    auth_client: typing.Annotated[
+        protocols.AuthClientProtocol,
+        fastapi.Depends(dependencies.get_auth_client),
+    ],
 ) -> entities.UserReadSchema:
     """Sign up for clients."""
-    _, new_user = await services.AuthClient.create_auth_client().sign_up(
-        data=data,
-    )
+    _, new_user = await auth_client.sign_up(data=data)
     return entities.UserReadSchema.model_validate(new_user).model_dump(
         mode="json",
     )
@@ -38,9 +40,13 @@ async def sign_up(
 )
 async def login(
     data: entities.UserSignInSchema,
+    auth_client: typing.Annotated[
+        protocols.AuthClientProtocol,
+        fastapi.Depends(dependencies.get_auth_client),
+    ],
 ) -> entities.AuthToken:
     """Sign in for client."""
-    token = await services.AuthClient.create_auth_client().authenticate(
+    token = await auth_client.authenticate(
         data=data,
     )
     return entities.AuthToken(access_token=token)
@@ -55,11 +61,13 @@ async def logout(
         str,
         fastapi.Depends(dependencies.oauth2_scheme),
     ],
+    auth_client: typing.Annotated[
+        protocols.AuthClientProtocol,
+        fastapi.Depends(dependencies.get_auth_client),
+    ],
 ) -> fastapi.Response:
     """Do logout."""
-    await services.AuthClient.create_auth_client().move_token_to_black_list(
-        token=token,
-    )
+    await auth_client.move_token_to_black_list(token=token)
     return fastapi.Response(status_code=http.HTTPStatus.NO_CONTENT)
 
 

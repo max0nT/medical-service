@@ -22,10 +22,6 @@ pydantic = "^2.11.3"
 # ASGI for backend
 # https://github.com/encode/uvicorn
 uvicorn = "0.40.0"
-# Extension for password encryption
-# https://passlib.readthedocs.io/en/stable/
-passlib = {extras = ["bcrypt"], version = "1.7.4"}
-bcrypt = "5.0.0"
 # Tool to manage environment variables
 # https://pypi.org/project/python-decouple/
 python-decouple = "^3.8"
@@ -92,6 +88,9 @@ sqladmin = "^0.22.0"
 # https://github.com/mosquito/aio-pika
 pika = "^1.3.2"
 aio-pika = "^9.5.8"
+# Advanced lib for password hashing
+# https://github.com/frankie567/pwdlib
+pwdlib = {extras = ["argon2"], version = "^0.3.0"}
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
