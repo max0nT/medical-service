@@ -1,3 +1,5 @@
+exclude: \.vscode
+
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.12.11
@@ -29,3 +31,9 @@ repos:
         language: system
         types: [ python ]
         pass_filenames: false
+
+      - id: go-lint
+        name: run go linter
+        entry: golangci-lint run --fix
+        language: system
+        types: [go]

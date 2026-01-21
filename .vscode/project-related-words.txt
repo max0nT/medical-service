@@ -3,6 +3,7 @@ argvalues
 axllent
 drivername
 enitity
+golangci
 joinedload
 jsonable
 lazyload
@@ -12,6 +13,7 @@ mailpit
 ondelete
 onupdate
 poolclass
+Prek
 rabbitmq
 saritasa
 sessionmaker

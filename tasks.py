@@ -2,17 +2,17 @@ import invoke
 import saritasa_invocations
 
 import invocations.android
+import invocations.prek
 
 ns = invoke.Collection(
     saritasa_invocations.docker,
     saritasa_invocations.git,
-    saritasa_invocations.github_actions,
-    saritasa_invocations.pre_commit,
     saritasa_invocations.system,
     saritasa_invocations.fastapi,
     saritasa_invocations.pytest,
     saritasa_invocations.alembic,
     invocations.android,
+    invocations.prek,
 )
 
 # Configurations for run command
@@ -23,13 +23,6 @@ ns.configure(
             "echo": True,
         },
         "saritasa_invocations": saritasa_invocations.Config(
-            pre_commit=saritasa_invocations.PreCommitSettings(
-                hooks=(
-                    "pre-commit",
-                    "pre-push",
-                    "commit-msg",
-                ),
-            ),
             git=saritasa_invocations.GitSettings(
                 merge_ff="true",
                 pull_ff="only",

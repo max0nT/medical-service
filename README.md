@@ -12,9 +12,14 @@ In order setup and run backend app you need to have next tools on your machine:
 
 - [uv](https://github.com/astral-sh/uv)
 - [poetry](https://github.com/python-poetry/poetry)
+
+- [go 1.25](https://github.com/golang/go)
+- [golangci](https://github.com/golangci/golangci-lint)
+
 - [docker](https://www.docker.com/)
 - [docker-compose](https://docs.docker.com/compose/)
 - [just](https://github.com/casey/just)
+- [prek](https://github.com/j178/prek)
 
 Then install virtual environment
 
