@@ -1,58 +1,20 @@
-# Medical mobile platform
+# Medical service mobile platform
 
-## Short description
+## About
 
-A mobile app to provide functions such as:
+Application to simplify managing some of processes in medical clinic such as:
 
-- Make record to a doctor's session
+- A doctor's appointment reservation
+- Load and keep info about client's documents
 
-## Local installation: backend app
 
-In order setup and run backend app you need to have next tools on your machine:
-
-- [uv](https://github.com/astral-sh/uv)
-- [poetry](https://github.com/python-poetry/poetry)
-
-- [go 1.25](https://github.com/golang/go)
-- [golangci](https://github.com/golangci/golangci-lint)
-
-- [docker](https://www.docker.com/)
-- [docker-compose](https://docs.docker.com/compose/)
-- [just](https://github.com/casey/just)
-- [prek](https://github.com/j178/prek)
-
-Then install virtual environment
-
-```bash
-just setup-deps
-```
-
-Then create `.env` file in config directory and move in content to there from `.env.template` file
-
-Next step is run app
-```bash
-inv fastapi.run
-```
-There are pre-commit hooks and to use it just run:
-```bash
-inv pre-commit.run-hooks
-```
-To run test via pytest use next command:
-```bash
-inv pytest.run
-```
-
-## Locally installation: email microservice
-
-You should follow installation guide for backend app before email microservice app
-
-If you've done it, just run
-```bash
-just email-run
-```
+## Documentation
+1. [Install guide](./docs/INSTALL.md)
 
 ## Stack
 
-FE: react native
+FE: ts/react native
 
 BE: FastAPI
+
+Notification: golang
