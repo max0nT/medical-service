@@ -10,9 +10,10 @@ from src import (
     entities,
     extensions,
     models,
-    permissions,
     protocols,
 )
+
+from .. import permissions
 
 router = fastapi.APIRouter(prefix="/users", tags=["Users"])
 

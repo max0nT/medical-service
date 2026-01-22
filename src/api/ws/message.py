@@ -4,7 +4,7 @@ import pydantic
 
 from src import repositories as repos
 
-router = fastapi.APIRouter(prefix="ws/")
+router = fastapi.APIRouter(prefix="/ws")
 
 
 class MessageData(pydantic.BaseModel):
