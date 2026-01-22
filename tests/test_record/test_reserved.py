@@ -1,7 +1,9 @@
 import httpx
 import pytest
 
-from src import factories, models, repositories
+from config import settings
+
+from src import dependencies, factories, models
 
 from .. import utils
 
@@ -39,5 +41,8 @@ async def test_api(
     assert response.status_code == expected_status_code
 
     # Post clear
-    repo = await repositories.RecordRepository.create_repository()
-    await repo.delete_one(pk=record.id)
+    repo = dependencies.get_repo(modelClass=models.Record)()
+    session = settings.session_factory()
+    await repo.delete(session=session, pk=record.id)
+    await session.commit()
+    await session.close()

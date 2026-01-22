@@ -5,10 +5,11 @@ import fastapi
 
 import arrow
 import jwt
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import settings
 
-from src import entities, models, protocols, repositories
+from src import entities, models, protocols
 from src.rabbitmq import rabbitmq_client
 from src.redis.client import RedisAPIClient
 
@@ -16,16 +17,24 @@ from src.redis.client import RedisAPIClient
 class AuthClient:
     """Provide base logic with signing in/up and authentication."""
 
-    def __init__(self, password_hasher: protocols.PasswordHasher) -> None:
+    def __init__(
+        self,
+        password_hasher: protocols.PasswordHasher,
+        user_repo: protocols.RepositoryProtocol[models.User],
+    ) -> None:
         self.password_hasher = password_hasher
+        self.user_repo = user_repo
 
     async def sign_up(
         self,
+        session: AsyncSession,
         data: entities.UserSignUpSchema,
     ) -> tuple[str, models.User]:
         """Create user logic."""
-        repo = await repositories.UserRepository.create_repository()
-        check_exist = await repo.get_list(email=data.email)
+        check_exist = await self.user_repo.select(
+            session=session,
+            email=data.email,
+        )
         validations_errors = []
         if check_exist:
             validations_errors.append(
@@ -43,7 +52,8 @@ class AuthClient:
                 status_code=http.HTTPStatus.BAD_REQUEST,
                 detail={"detail": validations_errors[0]},
             )
-        user = await repo.create_one(
+        user = await self.user_repo.insert(
+            session=session,
             email=data.email,
             password=self.password_hasher.hash(data.password),
             role=models.User.Role.client.value,
@@ -55,10 +65,14 @@ class AuthClient:
         )
         return token, user
 
-    async def authenticate(self, data: entities.UserSignInSchema) -> str:
+    async def authenticate(
+        self,
+        session: AsyncSession,
+        data: entities.UserSignInSchema,
+    ) -> str:
         """Implement user signing in if all correct return access token."""
-        repo = await repositories.UserRepository.create_repository()
-        user = await repo.get_list(
+        user = await self.user_repo.select(
+            session=session,
             email=data.email,
         )
         if (

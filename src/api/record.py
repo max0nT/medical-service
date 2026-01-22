@@ -1,15 +1,19 @@
 import http
+import typing
 
 import fastapi
 
+from config import settings
+
 from src import (
+    dependencies,
     entities,
     extensions,
+    models,
     permissions,
-    repositories,
+    protocols,
     services,
 )
-from src.models.record import Record
 
 router = fastapi.APIRouter(prefix="/records", tags=["Records"])
 
@@ -18,8 +22,12 @@ router = fastapi.APIRouter(prefix="/records", tags=["Records"])
 @permissions.permission_list(
     permission_classes=(permissions.IsAuthenticatedPermission,),
 )
-async def get_list(
+async def select(
     request: extensions.Request,
+    record_repo: typing.Annotated[
+        protocols.RepositoryProtocol[models.Record],
+        fastapi.Depends(dependencies.get_repo(models.Record)),
+    ],
     created_by: int | None = None,
     reserved_by: int | None = None,
 ) -> list[entities.RecordReadSchema]:
@@ -30,10 +38,13 @@ async def get_list(
     if reserved_by:
         filters["reserved_by"] = reserved_by
 
-    repository = await repositories.RecordRepository.create_repository()
-    result_list = await repository.get_list(
-        **filters,
-    )
+    async with settings.session_factory() as session:
+        result_list = await record_repo.select(
+            session=session,
+            **filters,
+        )
+        await session.close()
+
     return [
         entities.RecordReadSchema.model_validate(record)
         for record in result_list
@@ -46,11 +57,16 @@ async def get_list(
 )
 async def retrieve(
     request: extensions.Request,
+    record_repo: typing.Annotated[
+        protocols.RepositoryProtocol[models.Record],
+        fastapi.Depends(dependencies.get_repo(models.Record)),
+    ],
     pk: int,
 ) -> entities.RecordReadSchema:
     """Return one `Record` instance by id."""
-    repository = await repositories.RecordRepository.create_repository()
-    instance = await repository.retrieve_one(pk=pk, raise_error=True)
+    async with settings.session_factory() as session:
+        instance = await record_repo.select_one(session=session, pk=pk)
+        await session.commit()
     return entities.RecordReadSchema.model_validate(instance)
 
 
@@ -63,14 +79,20 @@ async def retrieve(
 )
 async def create(
     request: extensions.Request,
+    record_repo: typing.Annotated[
+        protocols.RepositoryProtocol[models.Record],
+        fastapi.Depends(dependencies.get_repo(models.Record)),
+    ],
     data: entities.RecordWriteSchema,
 ) -> entities.RecordReadSchema:
     """Create `Record` instance."""
-    repository = await repositories.RecordRepository.create_repository()
-    instance: Record = await repository.create_one(
-        created_by_id=request.user.id,
-        **data.model_dump(),
-    )
+    async with settings.session_factory() as session:
+        instance: models.Record = await record_repo.insert(
+            session=session,
+            created_by_id=request.user.id,
+            **data.model_dump(),
+        )
+        await session.commit()
     return entities.RecordReadSchema.model_validate(instance)
 
 
@@ -83,15 +105,22 @@ async def create(
 )
 async def update(
     request: extensions.Request,
+    record_repo: typing.Annotated[
+        protocols.RepositoryProtocol[models.Record],
+        fastapi.Depends(dependencies.get_repo(models.Record)),
+    ],
     pk: int,
     data: entities.RecordWriteSchema,
 ) -> entities.RecordReadSchema:
     """Update `Record` instance."""
+    async with settings.session_factory() as session:
+        updated_instance = await record_repo.update(
+            session=session,
+            pk=pk,
+            **data.model_dump(),
+        )
+        await session.commit()
 
-    repository = await repositories.RecordRepository.create_repository()
-    await repository.retrieve_one(pk=pk, raise_error=True)
-
-    updated_instance = await repository.update_one(pk=pk, **data.model_dump())
     return entities.RecordReadSchema.model_validate(updated_instance)
 
 
@@ -104,14 +133,16 @@ async def update(
 )
 async def reserve(
     request: extensions.Request,
+    record_repo: typing.Annotated[
+        protocols.RepositoryProtocol[models.Record],
+        fastapi.Depends(dependencies.get_repo(models.Record)),
+    ],
     pk: int,
 ) -> entities.RecordReadSchema:
-    repository = await repositories.RecordRepository.create_repository()
-    instance = await repository.retrieve_one(pk=pk, raise_error=True)
-
     updated_instance = await services.reserve(
+        record_repo=record_repo,
+        record_pk=pk,
         user=request.user,
-        record=instance,
     )
 
     return entities.RecordReadSchema.model_validate(updated_instance)
@@ -126,11 +157,16 @@ async def reserve(
 )
 async def delete(
     request: extensions.Request,
+    record_repo: typing.Annotated[
+        protocols.RepositoryProtocol[models.Record],
+        fastapi.Depends(dependencies.get_repo(models.Record)),
+    ],
     pk: int,
 ) -> fastapi.Response:
     """Delete `Record` instance."""
-    repository = await repositories.RecordRepository.create_repository()
-    is_deleted = await repository.delete_one(pk=pk)
+    async with settings.session_factory() as session:
+        is_deleted = await record_repo.delete(session=session, pk=pk)
+        await session.commit()
     if not is_deleted:
         raise fastapi.HTTPException(status_code=http.HTTPStatus.NOT_FOUND)
     return fastapi.Response(status_code=http.HTTPStatus.NO_CONTENT)

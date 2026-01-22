@@ -3,13 +3,15 @@ import typing
 
 import fastapi
 
+from config import settings
+
 from src import (
     dependencies,
     entities,
     extensions,
+    models,
     permissions,
     protocols,
-    repositories,
 )
 
 router = fastapi.APIRouter(prefix="/users", tags=["Users"])
@@ -28,7 +30,9 @@ async def sign_up(
     ],
 ) -> entities.UserReadSchema:
     """Sign up for clients."""
-    _, new_user = await auth_client.sign_up(data=data)
+    async with settings.session_factory() as session:
+        _, new_user = await auth_client.sign_up(session=session, data=data)
+        await session.commit()
     return entities.UserReadSchema.model_validate(new_user).model_dump(
         mode="json",
     )
@@ -46,9 +50,12 @@ async def login(
     ],
 ) -> entities.AuthToken:
     """Sign in for client."""
-    token = await auth_client.authenticate(
-        data=data,
-    )
+    async with settings.session_factory() as session:
+        token = await auth_client.authenticate(
+            session=session,
+            data=data,
+        )
+        await session.close()
     return entities.AuthToken(access_token=token)
 
 
@@ -89,13 +96,17 @@ async def me(request: extensions.Request) -> entities.UserReadSchema:
 @permissions.permission_list(
     permission_classes=(permissions.IsAuthenticatedPermission,),
 )
-async def get_list(
+async def select(
     request: extensions.Request,
+    user_repo: typing.Annotated[
+        protocols.RepositoryProtocol[models.User],
+        fastapi.Depends(dependencies.get_repo(models.User)),
+    ],
 ) -> list[entities.UserReadSchema]:
     """Return list of `User` instances."""
-    repository = await repositories.UserRepository.create_repository()
-    result_list = await repository.get_list()
-    ()
+    async with settings.session_factory() as session:
+        result_list = await user_repo.select(session=session)
+        await session.close()
     return [
         entities.UserReadSchema.model_validate(record)
         for record in result_list
@@ -108,12 +119,16 @@ async def get_list(
 )
 async def retrieve(
     request: extensions.Request,
+    user_repo: typing.Annotated[
+        protocols.RepositoryProtocol[models.User],
+        fastapi.Depends(dependencies.get_repo(models.User)),
+    ],
     pk: int,
 ) -> entities.UserReadSchema:
     """Return one `User` instance by id."""
-    repository = await repositories.UserRepository.create_repository()
-    instance = await repository.retrieve_one(pk=pk, raise_error=True)
-
+    async with settings.session_factory() as session:
+        instance = await user_repo.select_one(session=session, pk=pk)
+        await session.close()
     return entities.UserReadSchema.model_validate(instance)
 
 
@@ -123,16 +138,21 @@ async def retrieve(
 )
 async def update(
     request: fastapi.Request,
+    user_repo: typing.Annotated[
+        protocols.RepositoryProtocol[models.User],
+        fastapi.Depends(dependencies.get_repo(models.User)),
+    ],
     pk: int,
     data: typing.Annotated[entities.UserWriteSchema, fastapi.Form()],
     # avatar: fastapi.UploadFile | None = None,
 ) -> entities.UserReadSchema:
     """Update `Record` instance."""
-    repository = await repositories.UserRepository.create_repository()
-    await repository.retrieve_one(pk=pk, raise_error=True)
-    updated_instance = await repository.update_one(
-        pk=pk,
-        **data.model_dump(),
-        # avatar=avatar,
-    )
+    async with settings.session_factory() as session:
+        updated_instance = await user_repo.update(
+            session=session,
+            pk=pk,
+            **data.model_dump(),
+            # avatar=avatar,
+        )
+        await session.commit()
     return entities.UserReadSchema.model_validate(updated_instance)

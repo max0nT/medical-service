@@ -1,95 +1,84 @@
 import typing
-from abc import ABC
 
-import fastapi
-
-import httpx
 import sqlalchemy
-
-from config import settings
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.core import BaseModel
 
-ModelClass = typing.TypeVar(
-    "ModelClass",
+T = typing.TypeVar(
+    "T",
     bound=BaseModel,
 )
 
+REPO_CLASSES = {}
 
-class BaseRepository(typing.Generic[ModelClass], ABC):
+
+class BaseRepository(typing.Generic[T]):
     """Base repository class for interactive with database."""
 
-    model: type[ModelClass]
+    def __init_subclass__(cls):
+        modelClass: T = typing.get_args(cls)
+        REPO_CLASSES[modelClass] = cls
+        return super().__init_subclass__()
 
-    @classmethod
-    async def create_repository(cls) -> typing.Self:
-        return cls()
+    def __init__(self, model: BaseModel) -> None:
+        self.model = model
 
-    async def get_list(
+    async def select(
         self,
+        session: AsyncSession,
         *args,
         **data: typing.Any,
-    ) -> typing.Sequence[ModelClass]:
+    ) -> typing.Sequence[T]:
         """Return list of records from database."""
-        async with settings.session_factory() as session:
-            raw_result = await session.execute(
-                sqlalchemy.select(self.model).where(*args).filter_by(**data),
-            )
+        raw_result = await session.execute(
+            sqlalchemy.select(self.model).where(*args).filter_by(**data),
+        )
         return raw_result.scalars().all()
 
-    async def create_one(
+    async def insert(
         self,
+        session: AsyncSession,
         **data: typing.Any,
-    ) -> ModelClass:
+    ) -> T:
         """Create instance."""
         instance = self.model(**data)
-        async with settings.session_factory() as session:
-            session.add(instance)
-            await session.commit()
-            await session.refresh(instance)
+        session.add(instance)
+        await session.commit()
+        await session.refresh(instance)
         return instance
 
-    async def retrieve_one(
+    async def select_one(
         self,
+        session: AsyncSession,
         pk: int,
         raise_error: bool = False,
-    ) -> ModelClass | None:
+    ) -> T | None:
         """Return one instance by pk."""
-        async with settings.session_factory() as session:
-            raw_result = await session.get(self.model, pk)
+        return await session.get(self.model, pk)
 
-        if not raw_result and raise_error:
-            raise fastapi.exceptions.HTTPException(
-                status_code=httpx.codes.NOT_FOUND,
-                detail=f"Instances with {pk=} not found.",
-            )
-
-        return raw_result
-
-    async def update_one(
+    async def update(
         self,
+        session: AsyncSession,
         pk: int,
         **data: typing.Any,
-    ) -> ModelClass | None:
+    ) -> T | None:
         """Update instance by pk."""
-        async with settings.session_factory() as session:
-            raw = await session.execute(
-                sqlalchemy.update(self.model)
-                .where(self.model.id == pk)
-                .values(**data)
-                .returning(self.model),
-            )
-            await session.commit()
-            result = raw.scalar_one()
-        return result
+        raw = await session.execute(
+            sqlalchemy.update(self.model)
+            .where(self.model.id == pk)
+            .values(**data)
+            .returning(self.model),
+        )
+        return raw.scalar_one()
 
-    async def delete_one(
+    async def delete(
         self,
+        session: AsyncSession,
         pk: int,
     ) -> int:
         """Delete instance."""
-        async with settings.session_factory() as session:
-            result = await session.execute(
-                sqlalchemy.delete(self.model).where(self.model.id == pk),
-            )
+        result = await session.execute(
+            sqlalchemy.delete(self.model).where(self.model.id == pk),
+        )
         return result.rowcount

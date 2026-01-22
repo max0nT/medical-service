@@ -36,7 +36,7 @@ async def message(
         chat_repo = await repos.ChatRepository.create_repository()
         msg_repo = await repos.MessageRepository.create_repository()
 
-        chat = await chat_repo.retrieve_one(chat_id)
+        chat = await chat_repo.select_one(chat_id)
         if not chat:
             await websocket.send_json(
                 {
@@ -44,7 +44,7 @@ async def message(
                 },
             )
 
-        await msg_repo.create_one(
+        await msg_repo.insert(
             **structured_data.model_dump(),
             chat_id=chat_id,
         )

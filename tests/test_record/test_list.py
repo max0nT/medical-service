@@ -3,8 +3,9 @@ import pydantic
 import pytest
 import pytest_lazy_fixtures
 
-from src import entities, models
-from src.repositories.record import RecordRepository
+from config import settings
+
+from src import dependencies, entities, models
 
 
 @pytest.mark.parametrize(
@@ -42,10 +43,13 @@ async def test_api(
     ).validate_json(response.content)
     response_ids = [record_data.id for record_data in response_data]
 
-    repo = await RecordRepository.create_repository()
-    ids = {
-        entity.id
-        for entity in await repo.get_list(models.Record.id.in_(response_ids))
-    }
+    repo = dependencies.get_repo(modelClass=models.Record)()
+    session = settings.session_factory()
+    record_list = await repo.select(
+        session,
+        models.Record.id.in_(response_ids),
+    )
+    await session.close()
+    ids = {entity.id for entity in record_list}
     assert ids
     assert set(ids) == set(response_ids)

@@ -3,7 +3,9 @@ import httpx
 import pytest
 import pytest_lazy_fixtures
 
-from src import entities, models, repositories
+from config import settings
+
+from src import dependencies, entities, models
 from src.entities.record import RecordWriteSchema
 
 from .. import utils
@@ -44,9 +46,12 @@ async def test_api(
     response_data = entities.RecordReadSchema.model_validate_json(
         response.content,
     )
-    repo = await repositories.RecordRepository.create_repository()
+    repo = dependencies.get_repo(modelClass=models.Record)()
 
-    instance = await repo.retrieve_one(pk=response_data.id)
+    session = settings.session_factory()
+    instance = await repo.select_one(session=session, pk=response_data.id)
     assert instance
 
-    await repo.delete_one(pk=instance.id)
+    await repo.delete(session=session, pk=instance.id)
+    await session.commit()
+    await session.close()

@@ -8,7 +8,7 @@ import sqladmin
 
 from config import settings
 
-from src import admin, api, dependencies, extensions, models, repositories
+from src import admin, api, dependencies, extensions, models
 
 app = fastapi.FastAPI(redirect_slashes=False)
 app.include_router(api.record_api_router)
@@ -40,9 +40,13 @@ async def authorize(
         user_id = await auth_client.check_token_is_valid(
             token=token,
         )
-
-        user_repo = await repositories.UserRepository.create_repository()
-        user: models.User | None = await user_repo.retrieve_one(pk=user_id)
+        async with settings.session_factory() as session:
+            user_repo = dependencies.get_repo(modelClass=models.User)()
+            user: models.User | None = await user_repo.select_one(
+                session=session,
+                pk=user_id,
+            )
+            await session.close()
 
     request = extensions.Request(user=user, **request.__dict__)
     response = await next_call(request)

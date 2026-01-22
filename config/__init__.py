@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.pool import NullPool
 
 from config.rabbitmq import RabbitMqSettings
 
