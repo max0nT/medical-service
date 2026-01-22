@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"html/template"
 	"net/smtp"
-	"notifications/notifications/internal/entities"
+	"notifications/internal/entities"
 )
 
 func (s *SMTP) SendSignUpMail(data map[string]any) error {
 	serializedData := entities.SignUp{Email: data["email"].(string)}
 
 	htmlTmpl, err := template.ParseFiles(
-		"notifications/templates/sign_up.html",
+		"templates/sign_up.html",
 	)
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func (s *SMTP) SendSignUpMail(data map[string]any) error {
 	}
 
 	textTmpl, err := template.ParseFiles(
-		"notifications/templates/core.tmpl",
+		"templates/core.tmpl",
 	)
 	if err != nil {
 		return err

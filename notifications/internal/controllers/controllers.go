@@ -1,6 +1,6 @@
 package controllers
 
-import "notifications/notifications/internal/usecase"
+import "notifications/internal/usecase"
 
 type Controllers struct {
 	SMTPServer usecase.SMTPServer

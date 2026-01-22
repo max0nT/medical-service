@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
-	"notifications/notifications/config"
-	"notifications/notifications/internal/app"
+	"notifications/config"
+	"notifications/internal/app"
 )
 
 func main() {

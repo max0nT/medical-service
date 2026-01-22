@@ -3,10 +3,10 @@ package app
 import (
 	"fmt"
 	"log"
-	"notifications/notifications/config"
-	"notifications/notifications/internal/controllers"
-	"notifications/notifications/internal/usecase/smtp_serv"
-	"notifications/notifications/pkg/rmq"
+	"notifications/config"
+	"notifications/internal/controllers"
+	"notifications/internal/usecase/smtp_serv"
+	"notifications/pkg/rmq"
 
 	"github.com/wagslane/go-rabbitmq"
 )
@@ -31,14 +31,14 @@ func Run(cfg *config.Config) {
 		)
 		return
 	}
-	defer rmqClient.Conn.Close()
+	defer rmqClient.Conn.Close() // nolint: errcheck
 
 	consumer, err := rabbitmq.NewConsumer(
 		rmqClient.Conn,
 		"email_notifications",
 	)
 	if err != nil {
-		log.Fatalf(
+		log.Printf(
 			"Error during email notification consumer init: %s", err.Error(),
 		)
 		return

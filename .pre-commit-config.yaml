@@ -34,6 +34,7 @@ repos:
 
       - id: go-lint
         name: run go linter
-        entry: golangci-lint run --fix
+        entry: just go-lint
         language: system
         types: [go]
+        pass_filenames: false

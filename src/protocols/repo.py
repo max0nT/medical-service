@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 T = typing.TypeVar("T")
 
-class RepositoryProtocol(typing.Protocol, typing.Generic[T]):
 
+class RepositoryProtocol(typing.Protocol, typing.Generic[T]):
     async def select_one(
         self,
         session: AsyncSession,
