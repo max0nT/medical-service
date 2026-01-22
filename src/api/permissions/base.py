@@ -5,7 +5,7 @@ import fastapi
 
 import httpx
 
-from src import extensions
+from src import lib
 
 
 class BasePermission:
@@ -16,12 +16,12 @@ class BasePermission:
 
     def __init__(
         self,
-        request: extensions.Request | None = None,
+        request: lib.Request | None = None,
         **kwargs,
     ):
         assert (  # noqa: F631
-            isinstance(request, extensions.Request),
-            f"Request objects must be {extensions.Request},"
+            isinstance(request, lib.Request),
+            f"Request objects must be {lib.Request},"
             f" not {request.__class__.__name__}",
         )
         self.request = request

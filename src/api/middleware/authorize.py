@@ -4,7 +4,7 @@ import fastapi
 
 from config import settings
 
-from src import dependencies, extensions, models
+from src import dependencies, lib, models
 
 
 async def authorize(
@@ -28,6 +28,6 @@ async def authorize(
             )
             await session.close()
 
-    request = extensions.Request(user=user, **request.__dict__)
+    request = lib.Request(user=user, **request.__dict__)
     response = await next_call(request)
     return response

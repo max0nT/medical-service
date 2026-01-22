@@ -8,7 +8,7 @@ from config import settings
 from src import (
     dependencies,
     entities,
-    extensions,
+    lib,
     models,
     protocols,
     services,
@@ -24,7 +24,7 @@ router = fastapi.APIRouter(prefix="/records", tags=["Records"])
     permission_classes=(permissions.IsAuthenticatedPermission,),
 )
 async def select(
-    request: extensions.Request,
+    request: lib.Request,
     record_repo: typing.Annotated[
         protocols.RepositoryProtocol[models.Record],
         fastapi.Depends(dependencies.get_repo(models.Record)),
@@ -57,7 +57,7 @@ async def select(
     permission_classes=(permissions.IsAuthenticatedPermission,),
 )
 async def retrieve(
-    request: extensions.Request,
+    request: lib.Request,
     record_repo: typing.Annotated[
         protocols.RepositoryProtocol[models.Record],
         fastapi.Depends(dependencies.get_repo(models.Record)),
@@ -79,7 +79,7 @@ async def retrieve(
     ),
 )
 async def create(
-    request: extensions.Request,
+    request: lib.Request,
     record_repo: typing.Annotated[
         protocols.RepositoryProtocol[models.Record],
         fastapi.Depends(dependencies.get_repo(models.Record)),
@@ -105,7 +105,7 @@ async def create(
     ),
 )
 async def update(
-    request: extensions.Request,
+    request: lib.Request,
     record_repo: typing.Annotated[
         protocols.RepositoryProtocol[models.Record],
         fastapi.Depends(dependencies.get_repo(models.Record)),
@@ -133,7 +133,7 @@ async def update(
     ),
 )
 async def reserve(
-    request: extensions.Request,
+    request: lib.Request,
     record_repo: typing.Annotated[
         protocols.RepositoryProtocol[models.Record],
         fastapi.Depends(dependencies.get_repo(models.Record)),
@@ -157,7 +157,7 @@ async def reserve(
     ),
 )
 async def delete(
-    request: extensions.Request,
+    request: lib.Request,
     record_repo: typing.Annotated[
         protocols.RepositoryProtocol[models.Record],
         fastapi.Depends(dependencies.get_repo(models.Record)),

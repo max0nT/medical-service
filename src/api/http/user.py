@@ -8,7 +8,7 @@ from config import settings
 from src import (
     dependencies,
     entities,
-    extensions,
+    lib,
     models,
     protocols,
 )
@@ -86,7 +86,7 @@ async def logout(
 @permissions.permission_list(
     permission_classes=(permissions.IsAuthenticatedPermission,),
 )
-async def me(request: extensions.Request) -> entities.UserReadSchema:
+async def me(request: lib.Request) -> entities.UserReadSchema:
     """Get info about user by access token."""
     return entities.UserReadSchema.model_validate(request.user).model_dump(
         mode="json",
@@ -98,7 +98,7 @@ async def me(request: extensions.Request) -> entities.UserReadSchema:
     permission_classes=(permissions.IsAuthenticatedPermission,),
 )
 async def select(
-    request: extensions.Request,
+    request: lib.Request,
     user_repo: typing.Annotated[
         protocols.RepositoryProtocol[models.User],
         fastapi.Depends(dependencies.get_repo(models.User)),
@@ -119,7 +119,7 @@ async def select(
     permission_classes=(permissions.IsAuthenticatedPermission,),
 )
 async def retrieve(
-    request: extensions.Request,
+    request: lib.Request,
     user_repo: typing.Annotated[
         protocols.RepositoryProtocol[models.User],
         fastapi.Depends(dependencies.get_repo(models.User)),
