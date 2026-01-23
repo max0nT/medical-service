@@ -91,6 +91,9 @@ aio-pika = "^9.5.8"
 # Advanced lib for password hashing
 # https://github.com/frankie567/pwdlib
 pwdlib = {extras = ["argon2"], version = "^0.3.0"}
+# Advanced OpenAPI UI
+# https://scalar.com/products/api-references/integrations/fastapi
+scalar-fastapi = "^1.6.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
