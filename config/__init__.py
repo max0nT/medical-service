@@ -10,6 +10,7 @@ from config.rabbitmq import RabbitMqSettings
 
 from .auth import AuthSettings
 from .database import PostgresSettings
+from .qr import QrApiSettings
 from .redis import RedisSettings
 from .s3 import S3Config
 
@@ -19,6 +20,7 @@ class Settings(
     PostgresSettings,
     RabbitMqSettings,
     RedisSettings,
+    QrApiSettings,
     S3Config,
 ):
     """Settings class for app."""
