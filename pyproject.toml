@@ -79,7 +79,7 @@ boto3 = "^1.40.40"
 fastapi-storages = "^0.3.0"
 # To support load large data to api
 # https://pypi.org/project/python-multipart/
-python-multipart = "^0.0.21"
+python-multipart = "^0.0.22"
 # SqlAdmin for fastapi
 # https://github.com/aminalaee/sqladmin
 sqladmin = "^0.22.0"
