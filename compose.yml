@@ -27,15 +27,15 @@ services:
       retries: 5
 
   rabbitmq:
-    image: rabbitmq:latest
+    image: rabbitmq:3-management
     hostname: rabbitmq
     restart: always
     environment:
-      - RABBITMQ_DEFAULT_USER=rmuser
-      - RABBITMQ_DEFAULT_PASS=rmpassword
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
     volumes:
       - rabbitmq:/var/lib/rabbitmq
+      - ./rabbitmq_cfg/rabbitmq.conf/:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rabbitmq_cfg/definitions.json:/opt/definitions.json:ro
     ports:
       - 15672:15672
       - 5672:5672

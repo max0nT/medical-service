@@ -1,5 +1,7 @@
 package usecase
 
+import "notifications/internal/entities"
+
 type SMTPServer interface {
-	SendSignUpMail(map[string]any) error
+	SendEmail(entities.BodyMessage, string) error
 }

@@ -2,50 +2,56 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"notifications/config"
 	"notifications/internal/controllers"
-	"notifications/internal/usecase/smtp_serv"
+	"notifications/internal/usecase/smtp_client"
+	"notifications/pkg/logger"
 	"notifications/pkg/rmq"
-
-	"github.com/wagslane/go-rabbitmq"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func Run(cfg *config.Config) {
-	smtpServer := smtp_serv.NewSMTP(
-		"0.0.0.0:" + cfg.SmtpPort,
-	)
-	controllers := controllers.NewControllers(smtpServer)
+	l := logger.New(cfg.Level)
 
-	rmqClient, err := rmq.NewRmqServer(
-		fmt.Sprintf(
-			"amqp://%s:%s@0.0.0.0:%s",
-			cfg.User,
-			cfg.Password,
-			cfg.Port,
-		),
-	)
-	if err != nil {
-		log.Fatalf(
-			"Error during rmq connection start: %s", err.Error(),
-		)
-		return
-	}
-	defer rmqClient.Conn.Close() // nolint: errcheck
+	smtpClient := smtp_client.NewSMTP(cfg.SmtpURL)
+	messageController := controllers.NewControllers(smtpClient, l)
 
-	consumer, err := rabbitmq.NewConsumer(
-		rmqClient.Conn,
-		"email_notifications",
-	)
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
+
+	rmqServer, err := rmq.NewRMQClient(cfg.RmqURL, "email_exchange")
 	if err != nil {
-		log.Printf(
-			"Error during email notification consumer init: %s", err.Error(),
-		)
-		return
+		l.Fatal(fmt.Errorf("app - Run - rmqServer - server.New: %w", err))
 	}
-	err = consumer.Run(controllers.SendEmail)
+
+	err = rmqServer.AddConsumer("email.sign_up", messageController.SendEmail)
 	if err != nil {
-		return
+		l.Fatal(
+			fmt.Errorf("app - Run - rmqServer - server.AddConsumer: %w", err),
+		)
+	}
+
+	err = rmqServer.AddConsumer("email.reserve", messageController.SendEmail)
+	if err != nil {
+		l.Fatal(
+			fmt.Errorf("app - Run - rmqServer - server.AddConsumer: %w", err),
+		)
+	}
+
+	rmqServer.Start()
+
+	select {
+	case s := <-interrupt:
+		l.Info("app - Run - signal: %s", s.String())
+	case err = <-rmqServer.Notify():
+		l.Error(fmt.Errorf("app - Run - rmqServer.Notify: %w", err))
+	}
+
+	err = rmqServer.Shutdown()
+	if err != nil {
+		l.Error(fmt.Errorf("app - Run - rmqServer.Shutdown: %w", err))
 	}
 
 }

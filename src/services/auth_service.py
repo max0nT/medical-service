@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config import settings
 
 from src import entities, models, protocols
-from src.rabbitmq import rabbitmq_client
+from src.rabbitmq import Exchanges, RoutingKeys, rabbitmq_client
 from src.redis.client import RedisAPIClient
 
 
@@ -61,7 +61,8 @@ class AuthClient:
         token = self.setup_token(user=user)
         await rabbitmq_client.send_message(
             msg=(entities.EmailSignUp.model_validate(user).model_dump_json()),
-            queue="email_notifications",
+            queue=RoutingKeys.EMAIL_SIGN_UP,
+            exchange=Exchanges.EMAIL,
         )
         return token, user
 

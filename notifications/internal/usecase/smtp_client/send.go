@@ -1,4 +1,4 @@
-package smtp_serv
+package smtp_client
 
 import (
 	"bytes"
@@ -7,24 +7,26 @@ import (
 	"notifications/internal/entities"
 )
 
-func (s *SMTP) SendSignUpMail(data map[string]any) error {
-	serializedData := entities.SignUp{Email: data["email"].(string)}
+func (s *SmtpClient) SendEmail(
+	data entities.BodyMessage,
+	templateMsg string,
+) error {
 
 	htmlTmpl, err := template.ParseFiles(
-		"templates/sign_up.html",
+		templateMsg,
 	)
 	if err != nil {
 		return err
 	}
 
 	var htmlBuf bytes.Buffer
-	err = htmlTmpl.Execute(&htmlBuf, serializedData)
+	err = htmlTmpl.Execute(&htmlBuf, data)
 	if err != nil {
 		return err
 	}
 
 	wrapperData := map[string]string{
-		"Email": serializedData.Email,
+		"Email": data.Email,
 		"Body":  htmlBuf.String(),
 	}
 
@@ -45,7 +47,7 @@ func (s *SMTP) SendSignUpMail(data map[string]any) error {
 		s.URL,
 		nil,
 		"medical.service@gmail.com",
-		[]string{serializedData.Email},
+		[]string{data.Email},
 		emailBuf.Bytes(),
 	)
 	return err
