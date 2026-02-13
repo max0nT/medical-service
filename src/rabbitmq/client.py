@@ -4,6 +4,8 @@ import aio_pika
 
 from config import settings
 
+from src import entities
+
 
 class RoutingKeys(enum.StrEnum):
     """Enum of available routing keys."""
@@ -23,7 +25,7 @@ class RabbitMqClient:
 
     @staticmethod
     async def send_message(
-        msg: str,
+        body_message: entities.BaseEmailBody,
         queue: RoutingKeys,
         exchange: Exchanges,
     ) -> None:
@@ -32,7 +34,12 @@ class RabbitMqClient:
         ch = await conn.channel()
         ch.get_exchange(exchange)
         await ch.default_exchange.publish(
-            message=aio_pika.Message(body=msg.encode()),
+            message=aio_pika.Message(
+                body=bytes(
+                    body_message.model_dump_json(),
+                    encoding="utf-8",
+                ),
+            ),
             routing_key=queue,
         )
         await ch.close()

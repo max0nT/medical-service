@@ -74,8 +74,9 @@ class BaseModel(settings.Base):
         async with settings.session_factory() as session:
             raw = await session.execute(
                 sqlalchemy.select(self.model_name)
-                .options(orm.joinedload(*relationships))
+                .options(orm.selectinload(*relationships))
                 .filter_by(id=self.id),
             )
+
             instance = raw.scalar_one()
         return instance

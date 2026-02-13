@@ -41,7 +41,7 @@ type Client struct {
 // NewRMQClient -.
 func NewRMQClient(url, clientExchange string) (*Client, error) {
 	group, ctx := errgroup.WithContext(context.Background())
-	group.SetLimit(1) // Run only one goroutine
+	group.SetLimit(2) // nolint: mnd
 
 	cfg := Config{
 		URL:      url,
@@ -93,17 +93,21 @@ func (c *Client) Notify() <-chan error {
 
 func (c *Client) Start() {
 	for _, el := range c.consumers {
-		c.eg.Go(func() error {
-			var err error
-			for d := range el.Delivery {
-				err := el.HandlerFunc(&d)
-				if err != nil {
-					c.notify <- err
-					break
+		go func() {
+		Outer:
+			for {
+				select {
+				case d := <-el.Delivery:
+					err := el.HandlerFunc(&d)
+					if err != nil {
+						c.notify <- err
+					}
+				case <-c.notify:
+					break Outer
 				}
+
 			}
-			return err
-		})
+		}()
 	}
 }
 

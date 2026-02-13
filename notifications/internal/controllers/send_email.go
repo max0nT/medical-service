@@ -10,9 +10,9 @@ import (
 
 func (c *Controllers) SendEmail(d *amqp.Delivery) error {
 
-	var data entities.BodyMessage
+	var data any
 	var err error
-	var template string
+	var template, receiver string
 
 	defer func() {
 		if err != nil {
@@ -23,8 +23,17 @@ func (c *Controllers) SendEmail(d *amqp.Delivery) error {
 
 	switch d.RoutingKey {
 	case string(SignUp):
-		err = json.Unmarshal(d.Body, &data)
+		var signUp entities.SignUp
+		err = json.Unmarshal(d.Body, &signUp)
+		data = signUp
+		receiver = signUp.Email
 		template = "templates/sign_up.html"
+	case string(Reserved):
+		var reserved entities.Reserved
+		err = json.Unmarshal(d.Body, &reserved)
+		data = reserved
+		receiver = reserved.Email
+		template = "templates/reserved.html"
 	default:
 		err = fmt.Errorf(UnknownMessageType, d.RoutingKey)
 	}
@@ -39,7 +48,7 @@ func (c *Controllers) SendEmail(d *amqp.Delivery) error {
 		return nil
 	}
 
-	err = c.SMTPServer.SendEmail(data, template)
+	err = c.SMTPServer.SendEmail(receiver, data, template)
 	if err != nil {
 		err = fmt.Errorf(
 			"error email sending %s: %s",

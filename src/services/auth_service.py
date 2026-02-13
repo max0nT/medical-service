@@ -60,7 +60,7 @@ class AuthClient:
         )
         token = self.setup_token(user=user)
         await rabbitmq_client.send_message(
-            msg=(entities.EmailSignUp.model_validate(user).model_dump_json()),
+            body_message=entities.EmailSignUpBody.model_validate(user),
             queue=RoutingKeys.EMAIL_SIGN_UP,
             exchange=Exchanges.EMAIL,
         )

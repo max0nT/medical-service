@@ -47,3 +47,13 @@ class Record(BaseModel):
     )
 
     __tableargs__ = (CheckConstraint("created_by_id != reserved_by_id"),)
+
+    @property
+    def receiver_email(self) -> str:
+        """Return receiver email."""
+        return self.created_by.email
+
+    @property
+    def doctor_full_name(self) -> str:
+        """Return doctor full name."""
+        return f"{self.reserved_by.first_name} {self.reserved_by.last_name}"

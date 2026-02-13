@@ -138,12 +138,17 @@ async def reserve(
         protocols.RepositoryProtocol[models.Record],
         fastapi.Depends(dependencies.get_repo(models.Record)),
     ],
+    qr_code_generator: typing.Annotated[
+        services.QrCodeGenerator,
+        fastapi.Depends(services.get_qr_code_generator),
+    ],
     pk: int,
 ) -> entities.RecordReadSchema:
     updated_instance = await services.reserve(
         record_repo=record_repo,
         record_pk=pk,
         user=request.user,
+        qr_code_generator=qr_code_generator,
     )
 
     return entities.RecordReadSchema.model_validate(updated_instance)

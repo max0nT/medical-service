@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"html/template"
 	"net/smtp"
-	"notifications/internal/entities"
 )
 
 func (s *SmtpClient) SendEmail(
-	data entities.BodyMessage,
+	receiver string,
+	data any,
 	templateMsg string,
 ) error {
 
@@ -25,30 +25,12 @@ func (s *SmtpClient) SendEmail(
 		return err
 	}
 
-	wrapperData := map[string]string{
-		"Email": data.Email,
-		"Body":  htmlBuf.String(),
-	}
-
-	textTmpl, err := template.ParseFiles(
-		"templates/core.tmpl",
-	)
-	if err != nil {
-		return err
-	}
-
-	var emailBuf bytes.Buffer
-	err = textTmpl.Execute(&emailBuf, wrapperData)
-	if err != nil {
-		return err
-	}
-
 	err = smtp.SendMail(
 		s.URL,
 		nil,
 		"medical.service@gmail.com",
-		[]string{data.Email},
-		emailBuf.Bytes(),
+		[]string{receiver},
+		htmlBuf.Bytes(),
 	)
 	return err
 }

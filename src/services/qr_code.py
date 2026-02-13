@@ -1,7 +1,6 @@
 import base64
 
 import aiohttp
-import requests
 
 from config import settings
 
@@ -17,13 +16,14 @@ class QRCodeClient:
 
     BASE_URL = "https://www.qrcoder.co.uk/api/v4/"
 
-    async def get_qr_code(self, profile_url: str) -> requests.Response:
+    async def get_qr_code(self, profile_url: str) -> bytes:
         async with aiohttp.ClientSession(self.BASE_URL) as session:
             async with session.get(
                 "",
                 params=self.get_params(profile_url),
             ) as response:
-                return response
+                response.raise_for_status()
+                return await response.content.read()
 
     def get_params(self, profile_url: str) -> dict[str, str]:
         """Get params for api url request."""
@@ -51,14 +51,20 @@ class QrCodeGenerator:
 
     async def generate(self) -> bytes:
         """Return qr code in base64 format"""
-        response = await self.qr_code_client.get_qr_code(
+        content = await self.qr_code_client.get_qr_code(
             self.generate_user_profile(),
         )
-        response.raise_for_status()
-        return base64.b64encode(response.content)
+        return base64.b64encode(content).decode()
 
     def generate_user_profile(self) -> str:
         return (
             f"{self.request.url.scheme}://{self.request.url.hostname}"
             f"/users/{self.request.user.id}/"
         )
+
+
+def get_qr_code_generator(request: lib.Request) -> QrCodeGenerator:
+    return QrCodeGenerator(
+        qr_code_client=QRCodeClient(),
+        request=request,
+    )

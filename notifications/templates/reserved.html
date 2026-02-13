@@ -1,0 +1,64 @@
+From: Medical Service <medical.service@gmail.com>
+To: {{.Email}}
+Subject: Appointment Registration Successful
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+
+<!DOCTYPE html>
+<html>
+<body>
+    <table width="600" cellpadding="20" cellspacing="0">
+        <tr>
+            <td>
+                <h2>Medical Service</h2>
+                <h3 style="color: #008000;">Appointment Registration Successful!</h3>
+
+                <p>Hello!</p>
+
+                <p>Your appointment has been successfully reserved with <strong>Medical Service</strong>.</p>
+
+                <div style="background-color: #f0f8f0; padding: 20px; border-left: 4px solid #008000; margin: 15px 0; border-radius: 4px;">
+                    <p style="margin: 0 0 10px 0;"><strong>Appointment Details:</strong></p>
+
+                    <p style="margin: 5px 0;"><strong>Doctor/Department:</strong> {{.To}}</p>
+                    <p style="margin: 5px 0;"><strong>Date and Time:</strong> {{.ReservedAt}}</p>
+                    <p style="margin: 5px 0;"><strong>Patient Email:</strong> {{.Email}}</p>
+                </div>
+
+                <div style="background-color: #fff; padding: 20px; margin: 20px 0; border: 2px dashed #008000; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 15px 0; font-weight: bold; color: #008000;">Your Entry QR Code</p>
+                    <img src="data:image/png;base64,{{.QrCode}}" alt="QR Code for Appointment Entry" style="max-width: 200px; width: 100%; height: auto;">
+                    <p style="margin: 15px 0 0 0; color: #666; font-size: 14px;">Present this QR code at the reception for check-in</p>
+                </div>
+
+                <div style="background-color: #fff3cd; padding: 15px; border-left: 4px solid #856404; margin: 20px 0; border-radius: 4px;">
+                    <p style="margin: 0; color: #856404;">
+                        <strong>Important Information:</strong><br>
+                        • Please arrive 15 minutes before your scheduled time<br>
+                        • Bring your identification document<br>
+                        • Present this QR code at the reception desk<br>
+                        • If you need to cancel or reschedule, please do so at least 2 hours in advance
+                    </p>
+                </div>
+
+                <p style="margin: 20px 0 0 0;">You can also:</p>
+                <ul>
+                    <li>View or manage your appointment online</li>
+                    <li>Add appointment to calendar</li>
+                    <li>Receive reminders before your visit</li>
+                </ul>
+
+                <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+
+                <p>Best regards,<br>
+                <strong>The Medical Service Team</strong></p>
+
+                <p style="color: #666; font-size: 12px;">
+                    This is an automated message. Please do not reply to this email.<br>
+                    If you didn't book this appointment, please contact our support team immediately.
+                </p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

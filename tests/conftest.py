@@ -1,4 +1,6 @@
 import typing
+import unittest
+import unittest.mock
 
 import httpx
 import pytest
@@ -8,6 +10,25 @@ from config import settings
 from src import factories, models
 
 from . import utils
+
+TEST_QR_CODE_IN_BASE64 = (
+    "iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX//"
+    "/8AAABVwtN&#43;AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAy0lEQVRIie2U"
+    "wQ3EMAgE6YD&#43;u6QDjiH2Kfe5yOw3CCUwD8usAbPXHiwzwy08CAQSOFkHAqk"
+    "Y70AknisQSRXqoZJyN8i99nPSYmE/b3FOmsYtGZLKyr1aYV1wSKpIg&#43;S30hlx"
+    "iqwkbF9zSPASnq8JBN35WoLnhK4k7rkTSDVleiY0FVKKcS6vuGsfEYR35jbTFNKqlep9"
+    "ukAYkOzJDVcIDVmis972nWfkWmvcb588Jo5kvhaSQMhafoVcjxi0uAmkN5vzs9tbnJ"
+    "PX/tgHtBMAsgb78UMAAAAASUVORK5CYII="
+)
+
+
+@pytest.fixture(autouse=True)
+def mock_qr_generator() -> None:
+    """Mocker qr api generator execution."""
+    unittest.mock.patch(
+        "src.services.qr_code.QRCodeClient.get_qr_code",
+        lambda: TEST_QR_CODE_IN_BASE64,
+    )
 
 
 @pytest.fixture(scope="session")
