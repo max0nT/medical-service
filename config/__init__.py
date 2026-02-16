@@ -35,7 +35,10 @@ class Settings(
 settings = Settings(
     Base=declarative_base(),
 )
-settings.engine = create_async_engine(url=settings.database_url)
+settings.engine = create_async_engine(
+    url=settings.database_url,
+    echo=settings.engine_echo,
+)
 
 settings.session_factory = async_sessionmaker(
     bind=settings.engine,

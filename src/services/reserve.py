@@ -17,28 +17,31 @@ async def reserve(
 ):
     """Implement reserve logic."""
     async with settings.session_factory() as session:
-        record = await record_repo.select_one(session=session, pk=record_pk)
+        record = await record_repo.select(
+            session=session,
+            id=record_pk,
+            select_one=True,
+            joined_relations=(
+                (models.Record.reserved_by,),
+                (models.Record.created_by,),
+            ),
+        )
         if record.reserved_by_id and record.reserved_by_id != user.id:
             raise fastapi.HTTPException(
                 status_code=http.HTTPStatus.BAD_REQUEST,
                 detail={"detail": "Record was reserved"},
             )
-        reserved_by_id = user.id if record.reserved_by_id else None
-        updated_instance: models.Record = await record_repo.update(
-            session=session,
-            pk=record.id,
-            reserved_by_id=reserved_by_id,
-        )
+        record.reserved_by_id = user.id if record.reserved_by_id else None
+        await session.commit()
+
+        await session.refresh(record)
         await session.close()
 
-    if updated_instance.reserved_by_id:
-        updated_instance = await updated_instance.joined_load("*")
-        updated_instance.qr_code = await qr_code_generator.generate()
+    if record.reserved_by_id:
+        record.qr_code = await qr_code_generator.generate()
         await rabbitmq_client.send_message(
-            body_message=(
-                entities.EmailReservedBody.model_validate(updated_instance)
-            ),
+            body_message=(entities.EmailReservedBody.model_validate(record)),
             queue=RoutingKeys.EMAIL_RESERVE,
             exchange=Exchanges.EMAIL,
         )
-    return updated_instance
+    return record

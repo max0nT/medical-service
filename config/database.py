@@ -17,6 +17,8 @@ class PostgresSettings(pydantic_settings.BaseSettings):
     postgres_port: int
     postgres_db: str
 
+    engine_echo: bool = False
+
     engine: AsyncEngine | None = None
     session_factory: async_sessionmaker | None = None
     Base: decl_api.DeclarativeMeta | None = None
