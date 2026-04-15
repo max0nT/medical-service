@@ -92,8 +92,8 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc alias set s3minio http://minio:9001 root rootroot;
-      /usr/bin/mc mb s3minio/${COMPOSE_PROJECT_NAME}-files;
-      /usr/bin/mc anonymous set private s3minio/${COMPOSE_PROJECT_NAME}-files;
+      /usr/bin/mc mb s3minio/medical-service-files;
+      /usr/bin/mc anonymous set private s3minio/medical-service-files;
       exit 0;
       "
 

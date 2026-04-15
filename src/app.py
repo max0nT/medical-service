@@ -16,6 +16,7 @@ app = fastapi.FastAPI(redirect_slashes=False)
 # Routers settings
 app.include_router(http_routers.record_api_router)
 app.include_router(http_routers.user_api_router)
+app.include_router(http_routers.s3_router)
 app.include_router(ws_routers.ws_message_router)
 # Middleware settings
 app.add_middleware(

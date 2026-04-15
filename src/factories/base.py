@@ -1,7 +1,6 @@
 from inspect import isawaitable
 
 import factory
-from sqlalchemy.ext import asyncio as asyncio_ext
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.orm import decl_api
 
@@ -45,7 +44,7 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
     async def create_batch(
         cls,
         size: int,
-        session: asyncio_ext.AsyncSession,
+        # session: asyncio_ext.AsyncSession,
         **kwargs,
     ):
-        return [await cls(session=session, **kwargs) for _ in range(size)]
+        return [await cls(**kwargs) for _ in range(size)]

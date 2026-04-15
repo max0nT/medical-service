@@ -9,3 +9,4 @@ class S3Config(pydantic_settings.BaseSettings):
     aws_access_secret_key: str
     use_ssl: bool
     bucket_name: str
+    aws_querystring_auth: bool

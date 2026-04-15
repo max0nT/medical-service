@@ -14,5 +14,5 @@ class RabbitMqSettings(pydantic_settings.BaseSettings):
     def amqp_url(self) -> str:
         return (
             f"amqp://{self.rabbitmq_user}:"
-            f"{self.rabbitmq_password}@0.0.0.0:{self.rabbitmq_port}"
+            f"{self.rabbitmq_password}@rabbitmq:{self.rabbitmq_port}"
         )
