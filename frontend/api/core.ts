@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { AxiosInstance, Axios } from "axios"
+import axios, { AxiosInstance, Axios } from "axios";
 
-const HOSTNAME = "http://10.0.2.2:8000"
 
+const HOSTNAME = process.env.EXPO_PUBLIC_API_URL
+console.log(HOSTNAME)
 export const internalError: object = {
     "detail": {
         "detail": "Internal Error. Don't Worry our best specialists are already working on this"

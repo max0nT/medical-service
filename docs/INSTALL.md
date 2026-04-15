@@ -9,6 +9,7 @@
 - [golangci](https://github.com/golangci/golangci-lint)
 
 - [nvm](https://github.com/nvm-sh/nvm)
+- [npx]()
 
 - [docker](https://www.docker.com/)
 - [docker-compose](https://docs.docker.com/compose/)
@@ -21,7 +22,7 @@
 Then install virtual environment
 
 ```bash
-just setup-deps
+just venv
 ```
 
 Then create `.env` file in config directory and move in content to there from `.env.template` file
@@ -40,20 +41,24 @@ To run email notification service, install dependencies
 ```
 After that you can run it
 ```bash
-just run-notifications
+just notifications
 ```
 
 ## Android app
 
-Before start, you have to do following steps:
+Mobile app locally is available too
 
-1. Install android sdk and path to it as `ANDROID_HOME` env variable
-2. Install node dependencies, note you should use node version 20.19.4 and higher
-otherwise you won't able to run app
+1. You should install [expo](https://docs.expo.dev/) on either [Android 16 SDK](https://developer.android.com/about/versions/16/setup-sdk?hl=en)
+or you test device
+2. Install node version 20.9.4 and higher
 ```bash
-(cd ui && npm install)
+nvm install 20.9.4 && nvm use 20.19.4
 ```
-3. To run app need to run. Please remember you don't have to repeat step 1 - 2 when you do it one times
+3. Load all dependencies
 ```bash
-just android-run
+npm install
+```
+4. When all steps are done, android app is available by running a command
+```bash
+just frontend
 ```

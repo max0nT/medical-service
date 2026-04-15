@@ -32,7 +32,7 @@ class RabbitMqClient:
         """Send message."""
         conn = await aio_pika.connect_robust(settings.amqp_url)
         ch = await conn.channel()
-        ch.get_exchange(exchange)
+        await ch.get_exchange(exchange)
         await ch.default_exchange.publish(
             message=aio_pika.Message(
                 body=bytes(

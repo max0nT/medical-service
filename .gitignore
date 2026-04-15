@@ -1,40 +1,46 @@
-.idea
-.ropeproject
-.venv
-*/node_modules
-__pycache__/
+# IDE & Editors
+.idea/
+.ropeproject/
+*.tsbuildinfo
+
+# Environments & Configs
 .env
-.pytest_cache
-.ruff_cache
+.venv/
+
+# Python
+__pycache__/
+.pytest_cache/
+.ruff_cache/
 *.ipynb
 
+# JavaScript / Node
 node_modules/
+*/node_modules/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 
+# Expo & Web
 .expo/
 dist/
 web-build/
 expo-env.d.ts
+.metro-health-check*
 
+# Mobile (iOS & Android)
+/ios/
+/android/
 .kotlin/
-*.orig.*
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
 
-.metro-health-check*
-
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
+# OS & Security
 .DS_Store
 *.pem
+*.orig.*
 
-.env*.local
-
-*.tsbuildinfo
-
-/ios
-/android
+# Misc
+app-example/

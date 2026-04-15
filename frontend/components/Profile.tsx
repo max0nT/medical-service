@@ -33,7 +33,7 @@ export function ProfileScreen({ navigation }) {
       if (statusCode >= 400) {
         navigation.navigate("Login")
       }
-      setProfile(() => ({...responseBody}))
+      setProfile(prevData => ({...prevData, ...responseBody}))
       console.log(profile.last_name)
     }
     fetchProfile()
