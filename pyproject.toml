@@ -67,6 +67,7 @@ redis = "^7.0.0"
 # Grpc tools for remote coll procedure
 # https://pypi.org/project/grpcio-tools/
 grpcio-tools = "^1.74.0"
+grpcio = "^1.76.0"
 google = "^3.0.0"
 # Engine to render html template
 # https://jinja.palletsprojects.com/en/stable/
@@ -97,6 +98,8 @@ scalar-fastapi = "^1.6.1"
 aiohttp = "^3.13.3"
 requests = "^2.32.5"
 ipykernel = "^7.2.0"
+dishka = "^1.9.1"
+ollama = "^0.6.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

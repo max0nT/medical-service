@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message DocumentRecognitionRequest {
+    string image_base64 = 1;
+}
+
+message DocumentRecognitionResponse {
+    string raw = 1;
+}
+
+
+service DocumentRecognitionService {
+    rpc DocumentRecognition(
+        DocumentRecognitionRequest
+    ) returns (DocumentRecognitionResponse) {}
+}

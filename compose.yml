@@ -97,8 +97,17 @@ services:
       exit 0;
       "
 
+  ollama:
+    image: ollama/ollama
+    ports:
+      - 11434:11434
+    volumes:
+      - ollama:/root/.ollama
+
+
 volumes:
   postgres_data:
   mailpit-box:
   minio_data:
   rabbitmq:
+  ollama:

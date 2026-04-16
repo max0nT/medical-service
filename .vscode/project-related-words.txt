@@ -11,6 +11,7 @@ lpos
 lpush
 mailpit
 nolint
+ollama
 ondelete
 onupdate
 poolclass

@@ -35,6 +35,7 @@ ns.configure(
                     "minio",
                     "rabbitmq",
                     "minio-create-bucket",
+                    "ollama",
                 ),
             ),
             fastapi=saritasa_invocations.FastAPISettings(
