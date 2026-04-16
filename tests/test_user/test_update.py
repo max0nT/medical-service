@@ -32,7 +32,7 @@ async def test_api(
     request_data.first_name = new_name
     response: httpx.Response = await api_client.put(
         f"/users/{user.id}/",
-        data=request_data.model_dump(),
+        content=request_data.model_dump_json(),
     )
     assert response.status_code == expected_status_code
 

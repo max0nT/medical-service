@@ -144,7 +144,7 @@ async def update(
         fastapi.Depends(dependencies.get_repo(models.User)),
     ],
     pk: int,
-    data: typing.Annotated[entities.UserWriteSchema, fastapi.Form()],
+    data: entities.UserWriteSchema,
     # avatar: fastapi.UploadFile | None = None,
 ) -> entities.UserReadSchema:
     """Update `Record` instance."""

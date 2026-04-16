@@ -7,10 +7,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import { UserSignUp } from '../api/user/schemes';
+import { extractApiErrorMessage } from '../api/error';
 import { ErrorModal } from './ErrorModal';
 import { signUpRequest } from '../api/user/auth';
 
-export function SignUpScreen({ navigation }){
+export function SignUpScreen({ navigation }: any){
   const [singUp, setSignUp] = useState<UserSignUp>({
     email: "",
     password: "",
@@ -21,9 +22,10 @@ export function SignUpScreen({ navigation }){
   const handleLogin = () => {navigation.navigate("Login")}
   const handleSignUp = async () => {
     let [statusCode, requestBody] = await signUpRequest(singUp)
+        const response = requestBody as any
         if (statusCode >= 400) {
-            console.log(requestBody)
-            setErrorMessage(requestBody.detail.detail)
+            console.log(response)
+            setErrorMessage(extractApiErrorMessage(response, "Ошибка регистрации"))
         } else {
             navigation.navigate("Login")
         }

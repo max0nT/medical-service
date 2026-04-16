@@ -3,15 +3,16 @@ export interface UserRead {
     created: string,
     modified: string,
     email: string
-    first_name: string,
-    last_name: string,
+    first_name: string | null,
+    last_name: string | null,
     sync_with_google_calendar: boolean
     role: string
+    avatar?: string | null
 }
 
 export interface UserWrite {
-    first_name: number,
-    last_name: string,
+    first_name: string | null,
+    last_name: string | null,
     sync_with_google_calendar: boolean,
 }
 

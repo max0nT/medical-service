@@ -31,7 +31,11 @@ async def reserve(
                 status_code=http.HTTPStatus.BAD_REQUEST,
                 detail={"detail": "Record was reserved"},
             )
-        record.reserved_by_id = user.id if record.reserved_by_id else None
+        # Toggle reservation for current client:
+        # reserve free record or cancel own reservation.
+        record.reserved_by_id = (
+            None if record.reserved_by_id == user.id else user.id
+        )
         await session.commit()
 
         await session.refresh(record)
@@ -39,6 +43,7 @@ async def reserve(
 
     if record.reserved_by_id:
         record.qr_code = await qr_code_generator.generate()
+        record.email = user.email
         await rabbitmq_client.send_message(
             body_message=(entities.EmailReservedBody.model_validate(record)),
             queue=RoutingKeys.EMAIL_RESERVE,

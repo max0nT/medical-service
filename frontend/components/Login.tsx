@@ -12,12 +12,13 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { UserLogin } from '../api/user/schemes';
+import { extractApiErrorMessage } from '../api/error';
 import { ErrorModal } from './ErrorModal';
 import { loginRequest } from '../api/user/auth';
 
 const { width, height } = Dimensions.get('window');
 
-export function LoginScreen({ navigation }){
+export function LoginScreen({ navigation }: any){
   const [login, setLogin] = useState<UserLogin>({
     email: "",
     password: "",
@@ -26,11 +27,12 @@ export function LoginScreen({ navigation }){
 
   const handleLogin = async () => {
     let [statusCode, requestBody] = await loginRequest(login)
+    const response = requestBody as any
     if (statusCode >= 400) {
-        setErrorMessage(requestBody.detail.detail)
+        setErrorMessage(extractApiErrorMessage(response, "Ошибка авторизации"))
     } else {
-      console.log(requestBody)
-      await AsyncStorage.setItem("access_token", requestBody.access_token)
+      console.log(response)
+      await AsyncStorage.setItem("access_token", response.access_token)
       navigation.navigate("Profile")
     }
   };

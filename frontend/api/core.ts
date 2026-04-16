@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { AxiosInstance, Axios } from "axios";
+import axios, { AxiosInstance } from "axios";
 
 
 const HOSTNAME = process.env.EXPO_PUBLIC_API_URL
@@ -14,7 +14,6 @@ export const apiClient: AxiosInstance = axios.create(
     {
         baseURL: HOSTNAME,
         headers: {
-            "Content-Type": "application/json",
             "Accept": "application/json",
         }
     }
@@ -23,22 +22,28 @@ export const apiClient: AxiosInstance = axios.create(
 export async function MakeRequest(
     url: string,
     method: string,
-    data: object | null = null,
-    headers: object,
+    data: object | FormData | null = null,
+    headers: Record<string, string>,
 
 ): Promise<[number, object]> {
     let status: number = 500;
     let content: object = internalError;
+    const requestHeaders: Record<string, string> = { ...headers };
 
     if (data == null) {
         data = {}
     }
+
+    if (!(data instanceof FormData)) {
+        requestHeaders["Content-Type"] = "application/json";
+    }
+
     await apiClient.request(
         {
             url: url,
             method: method,
             data: data,
-            headers: headers,
+            headers: requestHeaders,
         }
     ).then(
         response => {

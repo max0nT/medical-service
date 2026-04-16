@@ -1,8 +1,9 @@
-import { MakeRequest } from "../core"
+import { GetJwtToken, MakeRequest } from "../core"
+import { UserLogin, UserSignUp } from "./schemes";
 
 
 export async function signUpRequest(
-    data: any,
+    data: UserSignUp,
 ): Promise<[number, object]> {
     return await MakeRequest(
         "/users/sign-up/",
@@ -14,12 +15,23 @@ export async function signUpRequest(
 
 
 export async function loginRequest(
-    data: any,
+    data: UserLogin,
 ): Promise<[number, object]> {
     return await MakeRequest(
         "/users/login/",
         "POST",
         data,
         {},
+    )
+}
+
+
+export async function logoutRequest(): Promise<[number, object]> {
+    const jwtToken: string = await GetJwtToken()
+    return await MakeRequest(
+        "/users/logout/",
+        "POST",
+        {},
+        { "Authorization": `Bearer ${jwtToken}` },
     )
 }
