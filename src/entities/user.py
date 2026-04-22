@@ -20,6 +20,7 @@ class UserWriteSchema(BaseModelSchema):
     first_name: str | None
     last_name: str | None
     sync_with_google_calendar: bool
+    avatar: str | None = None
 
 
 class UserSignUpSchema(BaseModelSchema):

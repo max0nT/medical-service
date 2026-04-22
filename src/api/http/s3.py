@@ -23,4 +23,4 @@ async def upload_file(
         file=file.file,
         name=f"photo{datetime.datetime.now().strftime('_%d_%m_%Y__%H_%M_%S')}",
     )
-    return entities.S3Path(path=s3_backend.get_path(s3_filename))
+    return entities.S3Path(name=s3_filename)

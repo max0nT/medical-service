@@ -1,6 +1,7 @@
 import fastapi
 import fastapi.middleware
 import fastapi.middleware.cors
+from fastapi.security import HTTPBearer
 
 import sqladmin
 from scalar_fastapi import get_scalar_api_reference
@@ -12,7 +13,10 @@ from src.api import http as http_routers
 from src.api import middleware
 from src.api import ws as ws_routers
 
-app = fastapi.FastAPI(redirect_slashes=False)
+app = fastapi.FastAPI(
+    redirect_slashes=False,
+    dependencies=[fastapi.Depends(HTTPBearer(auto_error=False))],
+)
 # Routers settings
 app.include_router(http_routers.record_api_router)
 app.include_router(http_routers.user_api_router)
