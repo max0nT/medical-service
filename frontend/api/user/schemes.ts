@@ -14,6 +14,7 @@ export interface UserWrite {
     first_name: string | null,
     last_name: string | null,
     sync_with_google_calendar: boolean,
+    avatar?: string | null,
 }
 
 

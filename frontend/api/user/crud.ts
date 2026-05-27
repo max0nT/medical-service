@@ -21,6 +21,7 @@ export async function UpdateProfileRequest(
         first_name: data.first_name ?? "",
         last_name: data.last_name ?? "",
         sync_with_google_calendar: data.sync_with_google_calendar,
+        avatar: data.avatar ?? null,
     }
 
     return MakeRequest(

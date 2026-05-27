@@ -17,7 +17,10 @@ import { MeRequest } from "../api/user/crud";
 import { UserRead } from "../api/user/schemes";
 import { extractApiErrorMessage } from "../api/error";
 import { ErrorModal } from "./ErrorModal";
+import { buildAvatarUri, getDisplayName, medicalTheme } from "../theme/medicalTheme";
 
+const placeholderAvatar = require("../assets/profile_placeholder.jpg");
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 const EMPTY_PROFILE: UserRead = {
   id: 0,
@@ -30,7 +33,6 @@ const EMPTY_PROFILE: UserRead = {
   role: "",
   avatar: null,
 };
-
 
 export function ProfileScreen({ navigation }: any) {
   const [profile, setProfile] = useState<UserRead>(EMPTY_PROFILE);
@@ -86,10 +88,20 @@ export function ProfileScreen({ navigation }: any) {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#2196F3" />
+        <ActivityIndicator size="large" color={medicalTheme.colors.primary} />
       </View>
     );
   }
+
+  const avatarUri = buildAvatarUri(profile.avatar, apiUrl);
+  const avatarSource = avatarUri ? { uri: avatarUri } : placeholderAvatar;
+  const fullName = getDisplayName(profile.first_name, profile.last_name);
+  const initials = fullName
+    .split(" ")
+    .map((value) => value[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -99,178 +111,255 @@ export function ProfileScreen({ navigation }: any) {
         duration={5000}
       />
 
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Профиль</Text>
+      <View style={styles.heroCard}>
+        <Text style={styles.kicker}>Личный кабинет пациента</Text>
+        <Text style={styles.heroTitle}>Ваш профиль здоровья и записей</Text>
+        <Text style={styles.heroText}>
+          Храните данные профиля в актуальном состоянии, чтобы быстрее записываться на приём.
+        </Text>
       </View>
 
-      <View style={styles.profileSection}>
-        <View style={styles.avatarContainer}>
+      <View style={styles.profileCard}>
+        <View style={styles.avatarFrame}>
           <Image
-            source={require("../assets/profile_placeholder.jpg")}
+            source={avatarSource}
             style={styles.avatar}
-            defaultSource={require("../assets/profile_placeholder.jpg")}
+            defaultSource={placeholderAvatar}
           />
+          {avatarUri ? null : (
+            <View style={styles.initialsBadge}>
+              <Text style={styles.initialsText}>{initials}</Text>
+            </View>
+          )}
         </View>
 
-        <Text style={styles.userName}>
-          {(profile.first_name ?? "").trim()} {(profile.last_name ?? "").trim()}
-        </Text>
+        <Text style={styles.userName}>{fullName}</Text>
         <Text style={styles.userEmail}>{profile.email}</Text>
+
+        <View style={styles.badgeRow}>
+          <View style={styles.infoBadge}>
+            <Text style={styles.infoBadgeLabel}>Роль</Text>
+            <Text style={styles.infoBadgeValue}>{profile.role || "client"}</Text>
+          </View>
+          <View style={styles.infoBadge}>
+            <Text style={styles.infoBadgeLabel}>Календарь</Text>
+            <Text style={styles.infoBadgeValue}>
+              {profile.sync_with_google_calendar ? "Подключён" : "Отключён"}
+            </Text>
+          </View>
+        </View>
       </View>
 
       <View style={styles.menuContainer}>
         <TouchableOpacity
           style={styles.primaryButton}
-          activeOpacity={0.7}
+          activeOpacity={0.8}
           onPress={() => navigation.navigate("Appointments")}
         >
-          <Text style={styles.primaryButtonText}>Записаться</Text>
+          <Text style={styles.primaryButtonText}>Записаться на приём</Text>
+          <Text style={styles.primaryButtonHint}>Посмотреть доступные слоты и свои записи</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.menuItem}
-          activeOpacity={0.7}
+          activeOpacity={0.8}
           onPress={() => navigation.navigate("EditProfile")}
         >
-          <View style={styles.menuItemContent}>
+          <View>
             <Text style={styles.menuItemText}>Редактировать профиль</Text>
-            <Text style={styles.menuItemArrow}>›</Text>
+            <Text style={styles.menuItemDescription}>
+              Изменить данные пациента и фотографию профиля
+            </Text>
           </View>
+          <Text style={styles.menuItemArrow}>›</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.logoutButton}
           onPress={handleLogout}
-          activeOpacity={0.7}
+          activeOpacity={0.8}
         >
-          <Text style={styles.logoutButtonText}>Выйти</Text>
+          <Text style={styles.logoutButtonText}>Выйти из аккаунта</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: medicalTheme.colors.background,
   },
   contentContainer: {
-    paddingBottom: 30,
+    padding: 20,
+    paddingBottom: 32,
+    gap: 18,
   },
   loaderContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: medicalTheme.colors.background,
   },
-  header: {
-    backgroundColor: "#FFFFFF",
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
+  heroCard: {
+    backgroundColor: medicalTheme.colors.primary,
+    borderRadius: medicalTheme.radius.lg,
+    padding: 24,
+    paddingTop: 28,
+    ...medicalTheme.shadow,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#000000",
-    textAlign: "center",
+  kicker: {
+    color: "#DDF9F1",
+    fontSize: 13,
+    fontWeight: "700",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    marginBottom: 10,
   },
-  profileSection: {
-    backgroundColor: "#FFFFFF",
+  heroTitle: {
+    color: "#FFFFFF",
+    fontSize: 28,
+    fontWeight: "700",
+    lineHeight: 34,
+    marginBottom: 10,
+  },
+  heroText: {
+    color: "#E9FFFA",
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  profileCard: {
+    backgroundColor: medicalTheme.colors.surface,
+    borderRadius: medicalTheme.radius.lg,
+    padding: 24,
     alignItems: "center",
-    paddingVertical: 30,
-    marginBottom: 20,
+    ...medicalTheme.shadow,
   },
-  avatarContainer: {
-    marginBottom: 20,
+  avatarFrame: {
     position: "relative",
+    marginBottom: 18,
   },
   avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 124,
+    height: 124,
+    borderRadius: 62,
+    borderWidth: 4,
+    borderColor: medicalTheme.colors.accent,
+    backgroundColor: medicalTheme.colors.surfaceMuted,
+  },
+  initialsBadge: {
+    position: "absolute",
+    right: -4,
+    bottom: -4,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: medicalTheme.colors.secondary,
     borderWidth: 3,
-    borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderColor: medicalTheme.colors.surface,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  initialsText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 14,
   },
   userName: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#000000",
-    marginBottom: 8,
+    fontSize: 26,
+    fontWeight: "700",
+    color: medicalTheme.colors.text,
     textAlign: "center",
-    paddingHorizontal: 20,
+    marginBottom: 6,
   },
   userEmail: {
-    fontSize: 16,
-    color: "#666666",
-    marginBottom: 4,
+    fontSize: 15,
+    color: medicalTheme.colors.textMuted,
+    marginBottom: 18,
+  },
+  badgeRow: {
+    width: "100%",
+    flexDirection: "row",
+    gap: 12,
+  },
+  infoBadge: {
+    flex: 1,
+    backgroundColor: medicalTheme.colors.surfaceMuted,
+    borderRadius: medicalTheme.radius.md,
+    padding: 14,
+  },
+  infoBadgeLabel: {
+    fontSize: 12,
+    color: medicalTheme.colors.textMuted,
+    marginBottom: 6,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+  infoBadgeValue: {
+    fontSize: 14,
+    color: medicalTheme.colors.text,
+    fontWeight: "700",
   },
   menuContainer: {
-    backgroundColor: "#FFFFFF",
-    marginHorizontal: 20,
-    borderRadius: 12,
-    paddingVertical: 10,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
+    gap: 14,
   },
   primaryButton: {
-    backgroundColor: "#2196F3",
-    marginHorizontal: 16,
-    marginVertical: 16,
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: "center",
-    shadowColor: "#2196F3",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: medicalTheme.colors.surface,
+    borderRadius: medicalTheme.radius.lg,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: medicalTheme.colors.border,
+    ...medicalTheme.shadow,
   },
   primaryButtonText: {
-    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "700",
+    color: medicalTheme.colors.primaryDark,
+    marginBottom: 6,
+  },
+  primaryButtonHint: {
+    fontSize: 14,
+    color: medicalTheme.colors.textMuted,
+    lineHeight: 20,
   },
   menuItem: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
-  },
-  menuItemContent: {
+    backgroundColor: medicalTheme.colors.surface,
+    borderRadius: medicalTheme.radius.md,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: medicalTheme.colors.border,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   menuItemText: {
-    fontSize: 16,
-    color: "#333333",
+    fontSize: 17,
+    fontWeight: "700",
+    color: medicalTheme.colors.text,
+    marginBottom: 4,
+  },
+  menuItemDescription: {
+    fontSize: 14,
+    color: medicalTheme.colors.textMuted,
+    maxWidth: 240,
+    lineHeight: 19,
   },
   menuItemArrow: {
-    fontSize: 24,
-    color: "#999999",
+    fontSize: 28,
+    color: medicalTheme.colors.primary,
   },
   logoutButton: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingVertical: 18,
+    alignItems: "center",
+    borderRadius: medicalTheme.radius.md,
+    backgroundColor: "#FFF3F3",
+    borderWidth: 1,
+    borderColor: "#F0D4D4",
   },
   logoutButtonText: {
+    color: medicalTheme.colors.danger,
     fontSize: 16,
-    color: "#F44336",
-    fontWeight: "500",
-    textAlign: "center",
+    fontWeight: "700",
   },
 });

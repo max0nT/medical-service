@@ -16,7 +16,7 @@ import { MeRequest } from "../api/user/crud";
 import { UserRead } from "../api/user/schemes";
 import { extractApiErrorMessage } from "../api/error";
 import { ErrorModal } from "./ErrorModal";
-
+import { medicalTheme } from "../theme/medicalTheme";
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -26,7 +26,6 @@ function formatDate(dateString: string): string {
     day: "numeric",
   });
 }
-
 
 export function AppointmentsScreen({ navigation }: any) {
   const [profile, setProfile] = useState<UserRead | null>(null);
@@ -92,7 +91,7 @@ export function AppointmentsScreen({ navigation }: any) {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#2196F3" />
+        <ActivityIndicator size="large" color={medicalTheme.colors.primary} />
       </View>
     );
   }
@@ -108,7 +107,11 @@ export function AppointmentsScreen({ navigation }: any) {
       style={styles.container}
       contentContainerStyle={styles.content}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => void onRefresh()}
+          tintColor={medicalTheme.colors.primary}
+        />
       }
     >
       <ErrorModal
@@ -117,7 +120,12 @@ export function AppointmentsScreen({ navigation }: any) {
         duration={5000}
       />
 
-      <Text style={styles.header}>Запись на приём</Text>
+      <View style={styles.heroCard}>
+        <Text style={styles.heroTitle}>Запись на приём</Text>
+        <Text style={styles.heroText}>
+          Отслеживайте подтверждённые записи и выбирайте ближайшее свободное окно для посещения клиники.
+        </Text>
+      </View>
 
       {!canReserve ? (
         <View style={styles.infoBox}>
@@ -129,37 +137,40 @@ export function AppointmentsScreen({ navigation }: any) {
 
       <Text style={styles.sectionTitle}>Мои записи</Text>
       {myRecords.length === 0 ? (
-        <Text style={styles.emptyText}>У вас пока нет записей.</Text>
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyText}>У вас пока нет подтверждённых записей.</Text>
+        </View>
       ) : (
         myRecords.map((record) => (
           <View key={record.id} style={styles.card}>
-            <Text style={styles.cardTitle}>
-              {formatDate(record.start)} - {formatDate(record.end)}
-            </Text>
-            <Text style={styles.cardMeta}>Статус: подтверждено</Text>
+            <Text style={styles.cardTitle}>{formatDate(record.start)}</Text>
+            <Text style={styles.cardMeta}>Завершение: {formatDate(record.end)}</Text>
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>Подтверждено</Text>
+            </View>
           </View>
         ))
       )}
 
       <Text style={styles.sectionTitle}>Свободные слоты</Text>
       {availableRecords.length === 0 ? (
-        <Text style={styles.emptyText}>Свободных слотов пока нет.</Text>
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyText}>Свободных слотов пока нет.</Text>
+        </View>
       ) : (
         availableRecords.map((record) => (
           <View key={record.id} style={styles.card}>
-            <Text style={styles.cardTitle}>
-              {formatDate(record.start)} - {formatDate(record.end)}
-            </Text>
-            <Text style={styles.cardMeta}>ID слота: {record.id}</Text>
+            <Text style={styles.cardTitle}>{formatDate(record.start)}</Text>
+            <Text style={styles.cardMeta}>Окончание: {formatDate(record.end)}</Text>
+            <Text style={styles.slotHint}>Идентификатор слота: {record.id}</Text>
             <TouchableOpacity
               style={[
                 styles.reserveButton,
-                !canReserve || bookingId === record.id
-                  ? styles.disabledButton
-                  : null,
+                !canReserve || bookingId === record.id ? styles.disabledButton : null,
               ]}
               disabled={!canReserve || bookingId === record.id}
-              onPress={() => handleReserve(record.id)}
+              onPress={() => void handleReserve(record.id)}
+              activeOpacity={0.85}
             >
               <Text style={styles.reserveButtonText}>
                 {bookingId === record.id ? "Бронирую..." : "Записаться"}
@@ -172,81 +183,115 @@ export function AppointmentsScreen({ navigation }: any) {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F7F8FA",
+    backgroundColor: medicalTheme.colors.background,
   },
   content: {
     padding: 20,
-    paddingBottom: 30,
+    paddingBottom: 32,
   },
   loaderContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: medicalTheme.colors.background,
   },
-  header: {
+  heroCard: {
+    backgroundColor: medicalTheme.colors.primary,
+    borderRadius: medicalTheme.radius.lg,
+    padding: 24,
+    marginBottom: 18,
+  },
+  heroTitle: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#111111",
-    marginBottom: 16,
+    color: "#FFFFFF",
+    marginBottom: 8,
+  },
+  heroText: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: "#E6FEF8",
   },
   infoBox: {
-    backgroundColor: "#FFF4E5",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 16,
+    backgroundColor: medicalTheme.colors.warningBg,
+    borderRadius: medicalTheme.radius.md,
+    padding: 14,
+    marginBottom: 18,
   },
   infoText: {
-    color: "#8A5300",
+    color: medicalTheme.colors.warningText,
     fontSize: 14,
+    lineHeight: 20,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#222222",
-    marginBottom: 10,
-    marginTop: 10,
+    fontSize: 21,
+    fontWeight: "700",
+    color: medicalTheme.colors.text,
+    marginBottom: 12,
+    marginTop: 6,
+  },
+  emptyCard: {
+    backgroundColor: medicalTheme.colors.surface,
+    borderRadius: medicalTheme.radius.md,
+    padding: 18,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: medicalTheme.colors.border,
   },
   emptyText: {
-    color: "#777777",
+    color: medicalTheme.colors.textMuted,
     fontSize: 15,
-    marginBottom: 10,
+    lineHeight: 21,
   },
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 12,
-    shadowColor: "#000000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 2,
+    backgroundColor: medicalTheme.colors.surface,
+    borderRadius: medicalTheme.radius.md,
+    padding: 18,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: medicalTheme.colors.border,
+    ...medicalTheme.shadow,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111111",
-    marginBottom: 6,
+    fontSize: 17,
+    fontWeight: "700",
+    color: medicalTheme.colors.text,
+    marginBottom: 8,
   },
   cardMeta: {
     fontSize: 14,
-    color: "#666666",
+    color: medicalTheme.colors.textMuted,
     marginBottom: 10,
   },
+  slotHint: {
+    fontSize: 13,
+    color: medicalTheme.colors.textMuted,
+    marginBottom: 12,
+  },
+  statusBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: medicalTheme.colors.accent,
+    borderRadius: medicalTheme.radius.pill,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  statusText: {
+    color: medicalTheme.colors.primaryDark,
+    fontSize: 13,
+    fontWeight: "700",
+  },
   reserveButton: {
-    backgroundColor: "#2196F3",
-    borderRadius: 10,
-    paddingVertical: 12,
+    backgroundColor: medicalTheme.colors.primary,
+    borderRadius: medicalTheme.radius.md,
+    paddingVertical: 13,
     alignItems: "center",
   },
   reserveButtonText: {
     color: "#FFFFFF",
-    fontWeight: "600",
+    fontWeight: "700",
     fontSize: 15,
   },
   disabledButton: {
