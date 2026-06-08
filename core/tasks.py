@@ -1,0 +1,49 @@
+import invoke
+import saritasa_invocations
+
+import core.invocations.android
+import core.invocations.prek
+
+ns = invoke.Collection(
+    saritasa_invocations.docker,
+    saritasa_invocations.git,
+    saritasa_invocations.system,
+    saritasa_invocations.fastapi,
+    saritasa_invocations.pytest,
+    saritasa_invocations.alembic,
+    core.invocations.android,
+    core.invocations.prek,
+)
+
+# Configurations for run command
+ns.configure(
+    {
+        "run": {
+            "pty": True,
+            "echo": True,
+        },
+        "saritasa_invocations": saritasa_invocations.Config(
+            git=saritasa_invocations.GitSettings(
+                merge_ff="true",
+                pull_ff="only",
+            ),
+            docker=saritasa_invocations.DockerSettings(
+                main_containers=(
+                    "postgres",
+                    "redis",
+                    "mailpit",
+                    "minio",
+                    "rabbitmq",
+                    "minio-create-bucket",
+                    "ollama",
+                ),
+            ),
+            fastapi=saritasa_invocations.FastAPISettings(
+                app="src.app:app",
+            ),
+            alembic=saritasa_invocations.AlembicSettings(
+                migrations_folder="migrations/versions",
+            ),
+        ),
+    },
+)

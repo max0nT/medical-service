@@ -1,0 +1,11 @@
+list:
+    @just --list
+
+copy-local-settings:
+    cp .env.local.template .env
+venv:
+    if [ test -d ".venv" ]; then rm -rf .venv; fi;
+    uv venv --python 3.12  --prompt medical-service && source .venv/bin/activate && poetry install
+fastapi:
+    docker compose up -d postgres rabbitmq redis minio
+    python -m app.infrastructure.fastapi.app
